@@ -157,6 +157,23 @@ Expression ln(const std::vector<Expression> & args){
   return Expression(result);
 }
 
+Expression sin(const std::vector<Expression> & args){
+  double result = 0;
+  
+  if(nargs_equal(args,1)){
+      if( (args[0].isHeadNumber()) ){
+        result = std::sin(args[0].head().asNumber());
+      }
+      else{      
+        throw SemanticError("Error in call to sin: invalid argument.");
+      }
+  }
+  else{
+    throw SemanticError("Error in call to sin: invalid number of arguments.");
+  }
+  return Expression(result);
+}
+
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
 
@@ -261,4 +278,7 @@ void Environment::reset(){
 
   // Procedure: ln;
   envmap.emplace("ln", EnvResult(ProcedureType, ln));
+
+  // Procedure: sin;
+  envmap.emplace("sin", EnvResult(ProcedureType, sin));
 }
