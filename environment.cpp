@@ -107,7 +107,7 @@ Expression div(const std::vector<Expression> & args){
 Expression sqrt(const std::vector<Expression> & args){
   double result = 0;
 
-  if(nargs_equal(args,1) && args > 0){
+  if(nargs_equal(args,1) && args[0].head().asNumber() > 0){
     if(args[0].isHeadNumber()){
       result = std::sqrt(args[0].head().asNumber());
     }
@@ -131,6 +131,28 @@ Expression pow(const std::vector<Expression> & args){
   }
   else{
     throw SemanticError("Error in call to power: invalid number of arguments.");
+  }
+  return Expression(result);
+}
+
+Expression ln(const std::vector<Expression> & args){
+  double result = 0;
+  
+  if(nargs_equal(args,1)){
+    if( args[0].head().asNumber() > 0){
+      if( (args[0].isHeadNumber()) ){
+        result = std::log(args[0].head().asNumber());
+      }
+      else{      
+        throw SemanticError("Error in call to ln: invalid argument.");
+      }
+    }
+    else{
+      throw SemanticError("Error in call to ln: negative numbers are not allowed.")
+    }
+  }
+  else{
+    throw SemanticError("Error in call to ln: invalid number of arguments.");
   }
   return Expression(result);
 }
@@ -235,5 +257,8 @@ void Environment::reset(){
   envmap.emplace("sqrt", EnvResult(ProcedureType, sqrt));
 
   // Procedure: pow;
-  envmap.emplace("^"), EnvResult(ProcedureType, pow));
+  envmap.emplace("^", EnvResult(ProcedureType, pow));
+
+  // Procedure: ln;
+  envmap.emplace("ln", EnvResult(ProcedureType, ln));
 }
