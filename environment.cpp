@@ -104,6 +104,18 @@ Expression div(const std::vector<Expression> & args){
   return Expression(result);
 };
 
+Expression sqrt(const std::vector<Expression> & args){
+  double result = 0;
+
+  if(nargs_equal(args,1) && args > 0){
+    result = std::sqrt(args);
+  }
+  else{
+    throw SemanticError("Error in call to square root: argument cannot be negative.")
+  }
+  return Expression(result);
+}
+
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
 const double e = std::exp(1);
