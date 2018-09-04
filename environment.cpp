@@ -106,6 +106,7 @@ Expression div(const std::vector<Expression> & args){
 
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
+const double e = std::exp(1);
 
 Environment::Environment(){
 
@@ -181,6 +182,9 @@ then re-add the default ones.
 void Environment::reset(){
 
   envmap.clear();
+
+  // Built-In value of e
+  envmap.emplace("e", EnvResult(ExpressionType, Expression(e)));
   
   // Built-In value of pi
   envmap.emplace("pi", EnvResult(ExpressionType, Expression(PI)));
