@@ -113,7 +113,7 @@ Expression sqrt(const std::vector<Expression> & args){
     }
   }
   else{
-    throw SemanticError("Error in call to square root: argument cannot be negative.")
+    throw SemanticError("Error in call to square root: argument cannot be negative.");
   }
   return Expression(result);
 }
@@ -148,7 +148,7 @@ Expression ln(const std::vector<Expression> & args){
       }
     }
     else{
-      throw SemanticError("Error in call to ln: negative numbers are not allowed.")
+      throw SemanticError("Error in call to ln: negative numbers are not allowed.");
     }
   }
   else{
