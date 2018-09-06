@@ -420,4 +420,19 @@ void Environment::reset(){
 
   // Procedure: tan;
   envmap.emplace("tan", EnvResult(ProcedureType, tan));
+
+  // Procedure: real;
+  envmap.emplace("real", EnvResult(ProcedureType, real));
+
+  // Procedure: imag;
+  envmap.emplace("imag", EnvResult(ProcedureType, imag));
+
+  // Procedure: mag;
+  envmap.emplace("mag", EnvResult(ProcedureType, mag));
+
+  // Procedure: arg;
+  envmap.emplace("arg", EnvResult(ProcedureType, arg));
+
+  // Procedure: imag;
+  envmap.emplace("conj", EnvResult(ProcedureType, conj));
 }
