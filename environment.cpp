@@ -114,7 +114,7 @@ Expression subneg(const std::vector<Expression> & args){
   else{
     throw SemanticError("Error in call to subtraction or negation: invalid number of arguments.");
   }
-
+  // Returns number if no complex
   if(result.imag() == 0 && complexArgs == false) {
     double newresult = result.real();
     return Expression(newresult);
@@ -122,11 +122,12 @@ Expression subneg(const std::vector<Expression> & args){
   return Expression(result);
 };
 
+
 Expression div(const std::vector<Expression> & args){
 
   std::complex<double> result (0.0,0.0); 
   bool complexArgs = false;
-
+  // check all arguments are number or complex while dividing
   if(nargs_equal(args,2)){
     if( (args[0].isHeadNumber()) && (args[1].isHeadNumber()) ){
       result = args[0].head().asNumber() / args[1].head().asNumber();
@@ -149,6 +150,7 @@ Expression div(const std::vector<Expression> & args){
   else{
     throw SemanticError("Error in call to division: invalid number of arguments.");
   }
+  // Returns number if no complex
   if(result.imag() == 0 && complexArgs == false) {
     double newresult = result.real();
     return Expression(newresult);
@@ -158,7 +160,7 @@ Expression div(const std::vector<Expression> & args){
 
 Expression sqrt(const std::vector<Expression> & args){
   std::complex<double> result (0.0,0.0);
-
+  // check if argument is number, negative number, or complex when multiplying
   if(nargs_equal(args,1)){
     if(args[0].isHeadNumber() && args[0].head().asNumber() >= 0){
       result = std::sqrt(args[0].head().asNumber());
@@ -174,6 +176,7 @@ Expression sqrt(const std::vector<Expression> & args){
   else{
     throw SemanticError("Error in call to square root: argument cannot be negative.");
   }
+  // Returns number if no complex
   if(result.imag() == 0) {
     double newresult = result.real();
     return Expression(newresult);
@@ -184,7 +187,7 @@ Expression sqrt(const std::vector<Expression> & args){
 Expression pow(const std::vector<Expression> & args){
   std::complex<double> result (0.0,0.0);
   bool complexArgs = false;
-
+  // check if number or complex when exponentiating
   if(nargs_equal(args,2)){
     if( (args[0].isHeadNumber()) && (args[1].isHeadNumber()) ){
       result = std::pow(args[0].head().asNumber(),args[1].head().asNumber());
@@ -208,6 +211,7 @@ Expression pow(const std::vector<Expression> & args){
   else{
     throw SemanticError("Error in call to power: invalid number of arguments.");
   }
+  // Returns number if no complex
   if(result.imag() == 0 && complexArgs == false) {
     double newresult = result.real();
     return Expression(newresult);
@@ -217,7 +221,7 @@ Expression pow(const std::vector<Expression> & args){
 
 Expression ln(const std::vector<Expression> & args){
   double result = 0;
-  
+  // check if argument is a positive number when doing ln
   if(nargs_equal(args,1)){
     if( args[0].head().asNumber() > 0){
       if( (args[0].isHeadNumber()) ){
@@ -239,7 +243,7 @@ Expression ln(const std::vector<Expression> & args){
 
 Expression sin(const std::vector<Expression> & args){
   double result = 0;
-  
+  // check if argument is a number when doing sin
   if(nargs_equal(args,1)){
       if( (args[0].isHeadNumber()) ){
         result = std::sin(args[0].head().asNumber());
@@ -256,7 +260,7 @@ Expression sin(const std::vector<Expression> & args){
 
 Expression cos(const std::vector<Expression> & args){
   double result = 0;
-  
+  // check if argument is a number when doing cos
   if(nargs_equal(args,1)){
       if( (args[0].isHeadNumber()) ){
         result = std::cos(args[0].head().asNumber());
@@ -273,7 +277,7 @@ Expression cos(const std::vector<Expression> & args){
 
 Expression tan(const std::vector<Expression> & args){
   double result = 0;
-  
+  // check if argument is a number when doing tan
   if(nargs_equal(args,1)){
       if( (args[0].isHeadNumber()) ){
         result = std::tan(args[0].head().asNumber());

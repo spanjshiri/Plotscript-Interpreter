@@ -120,6 +120,7 @@ void Atom::setComplex(const std::complex<double> value){
 }
 
 double Atom::asNumber() const noexcept{
+  // Convert a complex to a number if the current type is complex
   if(m_type == ComplexKind){
     double comtoNumber = complexValue.real();
     return comtoNumber;
@@ -140,6 +141,7 @@ std::string Atom::asSymbol() const noexcept{
 }
 
 std::complex<double> Atom::asComplex() const noexcept{
+  // Convert a number to a complex if the current type is number
   if(m_type == NumberKind){
     std::complex<double> numToComplex (numberValue,0.0);
     return numToComplex;
