@@ -140,15 +140,26 @@ Expression div(const std::vector<Expression> & args){
 };
 
 Expression sqrt(const std::vector<Expression> & args){
-  double result = 0;
+  std::complex<double> result (0.0,0.0);
 
-  if(nargs_equal(args,1) && args[0].head().asNumber() >= 0){
-    if(args[0].isHeadNumber()){
+  if(nargs_equal(args,1)){
+    if(args[0].isHeadNumber() && args[0].head().asNumber() >= 0){
       result = std::sqrt(args[0].head().asNumber());
+    }
+    else if(args[0].isHeadNumber() && args[0].head().asNumber() < 0){
+      std::complex<double> negativeNumber (args[0].head().asNumber(),0.0);
+      result = std::sqrt(negativeNumber);
+    }
+    else if(args[0].isHeadComplex()){
+      result = std::sqrt(args[0].head().asComplex());
     }
   }
   else{
     throw SemanticError("Error in call to square root: argument cannot be negative.");
+  }
+  if(result.imag() == 0) {
+    double newresult = result.real();
+    return Expression(newresult);
   }
   return Expression(result);
 }
