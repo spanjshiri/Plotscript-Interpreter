@@ -267,6 +267,41 @@ Expression imag(const std::vector<Expression> & args){
   }
 }
 
+// Returns magnitude(absolute value) of complex as a number, error if argument not complex
+Expression mag(const std::vector<Expression> & args){
+  if( (args[0].isHeadComplex()) ){
+    std::complex<double> result (args[0].head().asComplex());
+    double newresult = std::abs(result);
+    return Expression(newresult);
+  }
+  else{
+    throw SemanticError("Error in call to real: invalid argument");
+  }
+}
+
+// Returns arg(phase angle) of complex as a number, error if argument not complex
+Expression arg(const std::vector<Expression> & args){
+  if( (args[0].isHeadComplex()) ){
+    std::complex<double> result (args[0].head().asComplex());
+    double newresult = std::arg(result);
+    return Expression(newresult);
+  }
+  else{
+    throw SemanticError("Error in call to real: invalid argument");
+  }
+}
+
+// Returns conjugate of complex as a number, error if argument not complex
+Expression conj(const std::vector<Expression> & args){
+  if( (args[0].isHeadComplex()) ){
+    std::complex<double> result (args[0].head().asComplex());
+    result = std::conj(result);
+    return Expression(result);
+  }
+  else{
+    throw SemanticError("Error in call to real: invalid argument");
+  }
+}
 
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
