@@ -30,9 +30,13 @@ Expression add(const std::vector<Expression> & args){
 
   // check all aruments are numbers, while adding
   double result = 0;
+  std::complex<double> resultcomp (0.0,0.0);
   for( auto & a :args){
     if(a.isHeadNumber()){
       result += a.head().asNumber();      
+    }
+    else if(a.isHeadComplex()){
+      resultcomp += a.head().asComplex();
     }
     else{
       throw SemanticError("Error in call to add, argument not a number");
@@ -107,7 +111,7 @@ Expression div(const std::vector<Expression> & args){
 Expression sqrt(const std::vector<Expression> & args){
   double result = 0;
 
-  if(nargs_equal(args,1) && args[0].head().asNumber() > 0){
+  if(nargs_equal(args,1) && args[0].head().asNumber() >= 0){
     if(args[0].isHeadNumber()){
       result = std::sqrt(args[0].head().asNumber());
     }
@@ -210,6 +214,7 @@ Expression tan(const std::vector<Expression> & args){
 
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
+const std::complex<double> I (0.0,1.0);
 
 Environment::Environment(){
 
@@ -285,6 +290,9 @@ then re-add the default ones.
 void Environment::reset(){
 
   envmap.clear();
+
+  // Built-In value of I
+  envmap.emplace("I", EnvResult(ExpressionType, Expression(I)));
 
   // Built-In value of e
   envmap.emplace("e", EnvResult(ExpressionType, Expression(EXP)));
