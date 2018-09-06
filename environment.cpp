@@ -88,9 +88,19 @@ Expression subneg(const std::vector<Expression> & args){
       throw SemanticError("Error in call to negate: invalid argument.");
     }
   }
+  // if there are 2 arguments proceed with subtraction only if the 2 args are either number or complex
   else if(nargs_equal(args,2)){
     if( (args[0].isHeadNumber()) && (args[1].isHeadNumber()) ){
       result = args[0].head().asNumber() - args[1].head().asNumber();
+    }
+    else if( (args[0].isHeadComplex()) && (args[1].isHeadComplex()) ){
+      result = args[0].head().asComplex() - args[1].head().asComplex();
+    }
+    else if ( (args[0].isHeadComplex()) && (args[1].isHeadNumber()) ){
+      result = args[0].head().asComplex() - args[1].head().asNumber();
+    }
+    else if ( (args[0].isHeadNumber()) && (args[1].isHeadComplex()) ){
+      result = args[0].head().asNumber() - args[1].head().asComplex();
     }
     else{      
       throw SemanticError("Error in call to subtraction: invalid argument.");
@@ -109,7 +119,7 @@ Expression subneg(const std::vector<Expression> & args){
 
 Expression div(const std::vector<Expression> & args){
 
-  double result = 0;  
+  std::complex<double> result (0.0,0.0); 
 
   if(nargs_equal(args,2)){
     if( (args[0].isHeadNumber()) && (args[1].isHeadNumber()) ){
@@ -121,6 +131,10 @@ Expression div(const std::vector<Expression> & args){
   }
   else{
     throw SemanticError("Error in call to division: invalid number of arguments.");
+  }
+  if(result.imag() == 0) {
+    double newresult = result.real();
+    return Expression(newresult);
   }
   return Expression(result);
 };
@@ -228,6 +242,31 @@ Expression tan(const std::vector<Expression> & args){
   }
   return Expression(result);
 }
+
+// Returns real part of complex as a number, error if argument not complex
+Expression real(const std::vector<Expression> & args){
+  if( (args[0].isHeadComplex()) ){
+    std::complex<double> result (args[0].head().asComplex());
+    double newresult = result.real();
+    return Expression(newresult);
+  }
+  else{
+    throw SemanticError("Error in call to real: invalid argument");
+  }
+}
+
+// Returns imag part of complex as a number, error if argument not complex
+Expression imag(const std::vector<Expression> & args){
+  if( (args[0].isHeadComplex()) ){
+    std::complex<double> result (args[0].head().asComplex());
+    double newresult = result.imag();
+    return Expression(newresult);
+  }
+  else{
+    throw SemanticError("Error in call to real: invalid argument");
+  }
+}
+
 
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
