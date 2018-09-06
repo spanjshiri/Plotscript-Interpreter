@@ -29,47 +29,60 @@ Expression default_proc(const std::vector<Expression> & args){
 Expression add(const std::vector<Expression> & args){
 
   // check all aruments are numbers, while adding
-  double result = 0;
-  std::complex<double> resultcomp (0.0,0.0);
+  std::complex<double> result (0.0,0.0);
   for( auto & a :args){
     if(a.isHeadNumber()){
       result += a.head().asNumber();      
     }
     else if(a.isHeadComplex()){
-      resultcomp += a.head().asComplex();
+      result += a.head().asComplex();
     }
     else{
       throw SemanticError("Error in call to add, argument not a number");
     }
   }
 
+  if(result.imag() == 0) {
+    double newresult = result.real();
+    return Expression(newresult);
+  }
   return Expression(result);
 };
 
 Expression mul(const std::vector<Expression> & args){
  
   // check all aruments are numbers, while multiplying
-  double result = 1;
+  std::complex<double> result (0.0,0.0);
   for( auto & a :args){
     if(a.isHeadNumber()){
       result *= a.head().asNumber();      
+    }
+    else if(a.isHeadComplex()){
+      result *= a.head().asComplex();
     }
     else{
       throw SemanticError("Error in call to mul, argument not a number");
     }
   }
-
+  
+  if(result.imag() == 0) {
+    double newresult = result.real();
+    return Expression(newresult);
+  }
   return Expression(result);
 };
 
 Expression subneg(const std::vector<Expression> & args){
 
-  double result = 0;
+  std::complex<double> result (0.0,0.0);
 
   // preconditions
   if(nargs_equal(args,1)){
     if(args[0].isHeadNumber()){
       result = -args[0].head().asNumber();
+    }
+    else if(args[0].isHeadComplex()){
+      result = -args[0].head().asComplex();
     }
     else{
       throw SemanticError("Error in call to negate: invalid argument.");
@@ -87,6 +100,10 @@ Expression subneg(const std::vector<Expression> & args){
     throw SemanticError("Error in call to subtraction or negation: invalid number of arguments.");
   }
 
+  if(result.imag() == 0) {
+    double newresult = result.real();
+    return Expression(newresult);
+  }
   return Expression(result);
 };
 
