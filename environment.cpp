@@ -28,7 +28,7 @@ Expression default_proc(const std::vector<Expression> & args){
 
 Expression add(const std::vector<Expression> & args){
 
-  // check all aruments are numbers, while adding
+  // check all aruments are numbers or complex, while adding
   std::complex<double> result (0.0,0.0);
   for( auto & a :args){
     if(a.isHeadNumber()){
@@ -51,7 +51,7 @@ Expression add(const std::vector<Expression> & args){
 
 Expression mul(const std::vector<Expression> & args){
  
-  // check all aruments are numbers, while multiplying
+  // check all aruments are numbers or complex, while multiplying
   std::complex<double> result (0.0,0.0);
   for( auto & a :args){
     if(a.isHeadNumber()){
