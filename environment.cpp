@@ -256,61 +256,86 @@ Expression tan(const std::vector<Expression> & args){
 
 // Returns real part of complex as a number, error if argument not complex
 Expression real(const std::vector<Expression> & args){
-  if( (args[0].isHeadComplex()) ){
-    std::complex<double> result (args[0].head().asComplex());
-    double newresult = result.real();
-    return Expression(newresult);
+  if(nargs_equal(args,1)){
+    if( (args[0].isHeadComplex()) ){
+      std::complex<double> result (args[0].head().asComplex());
+      double newresult = result.real();
+      return Expression(newresult);
+    }
+    else{
+      throw SemanticError("Error in call to real: invalid argument");
+    }
   }
   else{
-    throw SemanticError("Error in call to real: invalid argument");
+    throw SemanticError("Error in call to real: invalid number of arguments.");
   }
 }
 
 // Returns imag part of complex as a number, error if argument not complex
 Expression imag(const std::vector<Expression> & args){
-  if( (args[0].isHeadComplex()) ){
-    std::complex<double> result (args[0].head().asComplex());
-    double newresult = result.imag();
-    return Expression(newresult);
+  if(nargs_equal(args,1)){
+    if( (args[0].isHeadComplex()) ){
+      std::complex<double> result (args[0].head().asComplex());
+      double newresult = result.imag();
+      return Expression(newresult);
+    }
+    else{
+      throw SemanticError("Error in call to real: invalid argument");
+    }
   }
   else{
-    throw SemanticError("Error in call to real: invalid argument");
+    throw SemanticError("Error in call to imag: invalid number of arguments.");
   }
 }
 
 // Returns magnitude(absolute value) of complex as a number, error if argument not complex
 Expression mag(const std::vector<Expression> & args){
-  if( (args[0].isHeadComplex()) ){
-    std::complex<double> result (args[0].head().asComplex());
-    double newresult = std::abs(result);
-    return Expression(newresult);
+  if(nargs_equal(args,1)){
+    if( (args[0].isHeadComplex()) ){
+      std::complex<double> result (args[0].head().asComplex());
+      double newresult = std::abs(result);
+      return Expression(newresult);
+    }
+    else{
+      throw SemanticError("Error in call to real: invalid argument");
+    }
   }
   else{
-    throw SemanticError("Error in call to real: invalid argument");
+    throw SemanticError("Error in call to mag: invalid number of arguments.");
   }
 }
 
 // Returns arg(phase angle) of complex as a number, error if argument not complex
 Expression arg(const std::vector<Expression> & args){
-  if( (args[0].isHeadComplex()) ){
-    std::complex<double> result (args[0].head().asComplex());
-    double newresult = std::arg(result);
-    return Expression(newresult);
+  if(nargs_equal(args,1)){
+    if( (args[0].isHeadComplex()) ){
+      std::complex<double> result (args[0].head().asComplex());
+      double newresult = std::arg(result);
+      return Expression(newresult);
+    }
+    else{
+      throw SemanticError("Error in call to real: invalid argument");
+    }
   }
   else{
-    throw SemanticError("Error in call to real: invalid argument");
+    throw SemanticError("Error in call to arg: invalid number of arguments.");
   }
 }
 
 // Returns conjugate of complex as a number, error if argument not complex
 Expression conj(const std::vector<Expression> & args){
-  if( (args[0].isHeadComplex()) ){
-    std::complex<double> result (args[0].head().asComplex());
-    result = std::conj(result);
-    return Expression(result);
+  if(nargs_equal(args,1)){
+    if( (args[0].isHeadComplex()) ){
+      std::complex<double> result (args[0].head().asComplex());
+      result = std::conj(result);
+      return Expression(result);
+    }
+    else{
+      throw SemanticError("Error in call to real: invalid argument");
+    }
   }
   else{
-    throw SemanticError("Error in call to real: invalid argument");
+    throw SemanticError("Error in call to conj: invalid number of arguments.");
   }
 }
 
