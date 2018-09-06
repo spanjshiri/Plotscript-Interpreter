@@ -120,7 +120,10 @@ void Atom::setComplex(const std::complex<double> value){
 }
 
 double Atom::asNumber() const noexcept{
-
+  if(m_type == ComplexKind){
+    double comtoNumber = complexValue.real();
+    return comtoNumber;
+  }
   return (m_type == NumberKind) ? numberValue : 0.0;  
 }
 
@@ -137,6 +140,10 @@ std::string Atom::asSymbol() const noexcept{
 }
 
 std::complex<double> Atom::asComplex() const noexcept{
+  if(m_type == NumberKind){
+    std::complex<double> numToComplex (numberValue,0.0);
+    return numToComplex;
+  }
   return (m_type == ComplexKind) ? complexValue : (0,0);
 }
 
