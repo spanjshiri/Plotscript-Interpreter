@@ -65,6 +65,160 @@ TEST_CASE( "Test get built-in procedure", "[environment]" ) {
   REQUIRE(padd(args) == Expression(3.0));
 }
 
+TEST_CASE( "Test add procedure", "[environment]" ) {
+  Environment env;
+  std::vector<Expression> args;
+
+  INFO("trying add procedure with a complex and a number")
+  Procedure padd = env.get_proc(Atom("+"));
+  Expression I = env.get_exp(Atom("I"));
+  args.emplace_back(1.0);
+  args.emplace_back(I);
+  REQUIRE(padd(args) == Expression(std::complex<double> (1.0,1.0)));
+
+  INFO("trying add procedure to throw semantic error")
+  args.clear();
+  Expression a(Atom("hello"));
+  env.add_exp(Atom("hi"), a);
+  args.emplace_back(Atom("hi"));
+  args.emplace_back(2.0);
+  REQUIRE_THROWS_AS(padd(args), SemanticError);
+}
+
+TEST_CASE("Test mul procedure", "[environment]") {
+	Environment env;
+	std::vector<Expression> args;
+
+	INFO("trying mul procedure with a complex and a number")
+	Procedure pmul = env.get_proc(Atom("*"));
+	Expression I = env.get_exp(Atom("I"));
+	args.emplace_back(1.0);
+	args.emplace_back(I);
+	REQUIRE(pmul(args) == Expression(std::complex<double>(0.0, 1.0)));
+
+	INFO("trying mul procedure to throw semantic error")
+	args.clear();
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+	args.emplace_back(Atom("hi"));
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(pmul(args), SemanticError);
+}
+
+TEST_CASE("Test subneg procedure", "[environment]") {
+	Environment env;
+	std::vector<Expression> args;
+
+	INFO("trying subneg with one number")
+	Procedure psub = env.get_proc(Atom("-"));
+	args.emplace_back(1.0);
+	REQUIRE(psub(args) == Expression(-1.0));
+
+	INFO("trying subneg with one complex")
+	args.clear();
+	Expression I = env.get_exp(Atom("I"));
+	args.emplace_back(I);
+	REQUIRE(psub(args) == Expression(std::complex<double>(0.0, -1.0)));
+
+	INFO("trying subneg with one number to throw a semantic error")
+	args.clear();
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+	args.emplace_back(Atom("hi"));
+	REQUIRE_THROWS_AS(psub(args), SemanticError);
+
+	INFO("trying subneg procedure with a complex minus complex")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE(psub(args) == Expression(std::complex<double>(0.0, 0.0)));
+
+	INFO("trying subneg procedure with a number minus complex")
+	args.clear();
+	args.emplace_back(1.0);
+	args.emplace_back(I);
+	REQUIRE(psub(args) == Expression(std::complex<double>(1.0, -1.0)));
+
+	INFO("trying subneg procedure with a complex minus number")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(1.0);
+	REQUIRE(psub(args) == Expression(std::complex<double>(-1.0, 1.0)));
+
+	INFO("trying subneg procedure to throw semantic error")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(psub(args), SemanticError);
+}
+
+TEST_CASE("Test div procedure", "[environment]") {
+	Environment env;
+	Procedure pdiv = env.get_proc(Atom("/"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying div with one number to throw a semantic error")
+	args.clear();
+	args.emplace_back(5.0);
+	REQUIRE_THROWS_AS(pdiv(args), SemanticError);
+
+	INFO("trying div procedure with a complex divided by complex")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE(pdiv(args) == Expression(std::complex<double>(1.0, 0.0)));
+
+	INFO("trying div procedure with a number divided by complex")
+	args.clear();
+	args.emplace_back(1.0);
+	args.emplace_back(I);
+	REQUIRE(pdiv(args) == Expression(std::complex<double>(0.0, -1.0)));
+
+	INFO("trying div procedure with a complex divided by number")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(1.0);
+	REQUIRE(pdiv(args) == Expression(std::complex<double>(0.0, 1.0)));
+
+	INFO("trying div procedure to throw semantic error")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(pdiv(args), SemanticError);
+}
+
+TEST_CASE("Test sqrt procedure", "[environment]") {
+	Environment env;
+	Procedure psqrt = env.get_proc(Atom("sqrt"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying sqrt with one positive number")
+	args.emplace_back(9.0);
+	REQUIRE(psqrt(args) == Expression(3.0));
+
+	INFO("trying sqrt procedure with one negative number")
+	args.clear();
+	args.emplace_back(-4.0);
+	REQUIRE(psqrt(args) == Expression(std::complex<double>(0.0, 2.0)));
+
+	INFO("trying sqrt procedure one complex value")
+	args.clear();
+	args.emplace_back(I);
+	REQUIRE(psqrt(args) == Expression(std::complex<double>(0.707107, 0.707107)));
+
+	INFO("trying sqrt with more than one value to throw semantic error")
+	args.clear();
+	args.emplace_back(5.0);
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(psqrt(args), SemanticError);
+}
+
 TEST_CASE( "Test reset", "[environment]" ) {
   Environment env;
 
