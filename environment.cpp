@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 #include "environment.hpp"
 #include "semantic_error.hpp"
@@ -373,6 +374,52 @@ Expression conj(const std::vector<Expression> & args){
   }
 };
 
+// Returns list as a vector of expressions
+Expression list(const std::vector<Expression> & args) {
+	std::vector<Expression> result = args;
+	return Expression(result);
+};
+
+// Returns the first entry in a list
+Expression first(const std::vector<Expression> & args) {
+	std::vector<Expression> result = args;
+	if (nargs_equal(args, 1) && (result[0].isHeadNumber() || result[0].isHeadComplex() || result[0].isHeadSymbol())) {
+		throw SemanticError("Error in call to first: argument is not a list.");
+	}
+	if (nargs_equal(args, 1)) {
+		if (result[0] == Expression()) {
+			throw SemanticError("Error in call to first: arugment to empty list.");
+		}
+		else {
+			return Expression(*result[0].tailConstBegin());
+		}
+	}
+	else {
+		throw SemanticError("Error in call to first: invalid number of arguments.");
+	}
+	
+}
+
+// Returns the first entry in a list
+Expression rest(const std::vector<Expression> & args) {
+	std::vector<Expression> result = args;
+	if (nargs_equal(args, 1) && (result[0].isHeadNumber() || result[0].isHeadComplex() || result[0].isHeadSymbol())) {
+		throw SemanticError("Error in call to rest: argument is not a list.");
+	}
+	if (nargs_equal(args, 1)) {
+		if (result[0] == Expression()) {
+			throw SemanticError("Error in call to rest: arugment to empty list.");
+		}
+		else {
+			return Expression(*result[0].tail());
+		}
+	}
+	else {
+		throw SemanticError("Error in call to rest: invalid number of arguments.");
+	}
+
+}
+
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
 const std::complex<double> I (0.0,1.0);
@@ -505,4 +552,13 @@ void Environment::reset(){
 
   // Procedure: imag;
   envmap.emplace("conj", EnvResult(ProcedureType, conj));
+
+  // Procedure: list;
+  envmap.emplace("list", EnvResult(ProcedureType, list));
+
+  // Procedure: first;
+  envmap.emplace("first", EnvResult(ProcedureType, first));
+
+  // Procedure: rest;
+  envmap.emplace("rest", EnvResult(ProcedureType, rest));
 }

@@ -219,6 +219,20 @@ TEST_CASE("Test sqrt procedure", "[environment]") {
 	REQUIRE_THROWS_AS(psqrt(args), SemanticError);
 }
 
+TEST_CASE("Test pow procedure", "[environment]") {
+	Environment env;
+	Procedure ppow = env.get_proc(Atom("^"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying pow with one positive number")
+	args.emplace_back(I);
+	args.emplace_back(5.0);
+	REQUIRE(ppow(args) == Expression(I));
+}
+
 TEST_CASE( "Test reset", "[environment]" ) {
   Environment env;
 

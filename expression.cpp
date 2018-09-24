@@ -22,6 +22,11 @@ Expression::Expression(const Expression & a){
   }
 }
 
+// List Constructor
+Expression::Expression(const std::vector<Expression> & list) {
+	m_tail = list;
+}
+
 Expression & Expression::operator=(const Expression & a){
 
   // prevent self-assignment
@@ -115,6 +120,9 @@ Expression Expression::handle_lookup(const Atom & head, const Environment & env)
     else if(head.isNumber()){
       return Expression(head);
     }
+	/*else if (head.asSymbol() == "list") {
+		return Expression(m_tail);
+	}*/
     else{
       throw SemanticError("Error during evaluation: Invalid type in terminal expression");
     }
@@ -175,8 +183,10 @@ Expression Expression::handle_define(Environment & env){
 // difficult with the ast data structure used (no parent pointer).
 // this limits the practical depth of our AST
 Expression Expression::eval(Environment & env){
-  
   if(m_tail.empty()){
+	if (m_head.isSymbol() && m_head.asSymbol() == "list") {
+		  return Expression();
+	}
     return handle_lookup(m_head, env);
   }
   // handle begin special-form
@@ -199,25 +209,31 @@ Expression Expression::eval(Environment & env){
 
 
 std::ostream & operator<<(std::ostream & out, const Expression & exp){
-
-  if(exp.isHeadNumber() || exp.isHeadSymbol()) out << "(";
+  if(!exp.isHeadComplex()) out << "(";
   out << exp.head();
 
   for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
-    out << *e;
+	  auto it = e + 1;
+	  if (it == exp.tailConstEnd()) {
+		  out << *e;
+	  }
+	  else {
+		  out << *e << " ";
+	  }
   }
 
-  if(exp.isHeadNumber() || exp.isHeadSymbol()) out << ")";
-
+  if (!exp.isHeadComplex()) {
+	  out << ")";
+  }
   return out;
 }
 
 bool Expression::operator==(const Expression & exp) const noexcept{
-
+  
   bool result = (m_head == exp.m_head);
 
   result = result && (m_tail.size() == exp.m_tail.size());
-
+  //std::numeric_limits<double>::epsilon()
   if(result){
     for(auto lefte = m_tail.begin(), righte = exp.m_tail.begin();
 	(lefte != m_tail.end()) && (righte != exp.m_tail.end());

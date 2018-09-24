@@ -35,6 +35,9 @@ public:
   /// deep-copy construct an expression (recursive)
   Expression(const Expression & a);
 
+  // List Constructor
+  Expression::Expression(const std::vector<Expression> & list);
+
   /// deep-copy assign an expression  (recursive)
   Expression & operator=(const Expression & a);
 
@@ -82,11 +85,16 @@ private:
 
   // convenience typedef
   typedef std::vector<Expression>::iterator IteratorType;
+
+  // typedef for List
+  typedef std::vector<Expression>::iterator ListType;
   
   // internal helper methods
   Expression handle_lookup(const Atom & head, const Environment & env);
   Expression handle_define(Environment & env);
   Expression handle_begin(Environment & env);
+
+  enum Type { NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind};
 };
 
 /// Render expression to output stream
