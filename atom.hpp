@@ -66,7 +66,7 @@ public:
   /// equality comparison based on type and value
   bool operator==(const Atom & right) const noexcept;
 
-  void Atom::setList();
+  void setList();
 
 private:
 

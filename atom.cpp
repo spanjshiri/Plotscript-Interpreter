@@ -175,7 +175,7 @@ bool Atom::operator==(const Atom & right) const noexcept{
       double dright = right.numberValue;
       double diff = fabs(dleft - dright);
       if(std::isnan(diff) ||
-	 (diff > std::numeric_limits<double>::epsilon()*2)) return false;
+	 (diff > std::numeric_limits<double>::epsilon()*2.0)) return false;
     }
     break;
   case SymbolKind:
@@ -190,10 +190,9 @@ bool Atom::operator==(const Atom & right) const noexcept{
     if(right.m_type != ComplexKind) return false;
 	std::complex<double> dleft = complexValue;
 	std::complex<double> dright = right.complexValue;
-	double diff = std::abs(dleft - dright);
-	if (std::isnan(diff) ||
-    (diff > std::numeric_limits<double>::epsilon()*2)) return false;
-    return complexValue == right.complexValue;
+	std::complex<double> diff = (dleft - dright);
+	if (std::isnan(diff.real()) || std::isnan(diff.imag()) || 
+    (diff.real() > std::numeric_limits<double>::epsilon()*2.0) || (diff.imag() > std::numeric_limits<double>::epsilon()*2.0)) return false;
   }
   break;
   default:

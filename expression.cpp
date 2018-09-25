@@ -9,7 +9,6 @@
 Expression::Expression(){}
 
 Expression::Expression(const Atom & a){
-
   m_head = a;
 }
 
@@ -64,7 +63,7 @@ bool Expression::isHeadComplex() const noexcept{
 }
 
 bool Expression::isHeadList() const noexcept {
-	return m_head.isList();
+  return m_head.isList();
 }
 
 
@@ -190,7 +189,7 @@ Expression Expression::handle_define(Environment & env){
 Expression Expression::eval(Environment & env){
   if(m_tail.empty()){
 	if (m_head.isSymbol() && m_head.asSymbol() == "list") {
-		  return Expression();
+		  return Expression(m_tail);
 	}
     return handle_lookup(m_head, env);
   }

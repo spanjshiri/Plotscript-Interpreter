@@ -387,7 +387,7 @@ Expression first(const std::vector<Expression> & args) {
 		throw SemanticError("Error in call to first: argument is not a list.");
 	}
 	if (nargs_equal(args, 1)) {
-		if (result[0] == Expression()) {
+		if (args[0].tailConstBegin() == args[0].tailConstEnd()) {
 			throw SemanticError("Error in call to first: arugment to empty list.");
 		}
 		else {
@@ -400,24 +400,107 @@ Expression first(const std::vector<Expression> & args) {
 	
 }
 
-// Returns the first entry in a list
+// Returns all entries after the first in the list
 Expression rest(const std::vector<Expression> & args) {
-	std::vector<Expression> result = args;
-	if (nargs_equal(args, 1) && (result[0].isHeadNumber() || result[0].isHeadComplex() || result[0].isHeadSymbol())) {
+	std::vector<Expression> result;
+	if (nargs_equal(args, 1) && (!args[0].isHeadList())) {
 		throw SemanticError("Error in call to rest: argument is not a list.");
 	}
-	if (nargs_equal(args, 1)) {
-		if (result[0] == Expression()) {
+	if (nargs_equal(args, 1) ) {
+		if (args[0].tailConstBegin() == args[0].tailConstEnd()) {
 			throw SemanticError("Error in call to rest: arugment to empty list.");
 		}
 		else {
-			return Expression(*result[0].tail());
+			for (auto e = (args[0].tailConstBegin() + 1); e != args[0].tailConstEnd(); e++) {
+				result.push_back(Expression(*e));
+			}
 		}
 	}
 	else {
 		throw SemanticError("Error in call to rest: invalid number of arguments.");
 	}
+	return Expression(result);
+}
 
+// Returns the length of the list
+Expression length(const std::vector<Expression> & args) {
+	std::vector<Expression> result;
+	int count = 0;
+	if (nargs_equal(args, 1) && (args[0].isHeadList())) {
+		for (auto e = (args[0].tailConstBegin()); e != args[0].tailConstEnd(); e++) {
+			count++;
+		}
+	}
+	else if (nargs_equal(args, 0) && (args[0].isHeadList())) {
+		if (args[0] == Expression()) {
+			return Expression(count);
+		}
+	}
+	else {
+		throw SemanticError("Error in call to length: argument is not a list.");
+	}
+	return Expression(count);
+}
+
+// Adds an expression to the end of the list
+Expression append(const std::vector<Expression> & args) {
+	std::vector<Expression> result;
+	if ((nargs_equal(args, 2)) && (args[0].isHeadList()) && (!args[1].isHeadList())) {
+		for (auto e = (args[0].tailConstBegin()); e != args[0].tailConstEnd(); e++) {
+			result.push_back(Expression(*e));
+		}
+		result.push_back(Expression(args[1]));
+	}
+	else if ((!nargs_equal(args, 2))) {
+		throw SemanticError("Error in call to append: invalid number of arguments, must be binary.");
+	}
+	else {
+		throw SemanticError("Error in call to append: first argument is not a list.");
+	}
+	return Expression(result);
+}
+
+// Adds an expression to the end of the list
+Expression join(const std::vector<Expression> & args) {
+	std::vector<Expression> result;
+	if ((nargs_equal(args, 2)) && (args[0].isHeadList()) && (args[1].isHeadList())) {
+		for (auto e = (args[0].tailConstBegin()); e != args[0].tailConstEnd(); e++) {
+			result.push_back(Expression(*e));
+		}
+		for (auto f = (args[1].tailConstBegin()); f != args[1].tailConstEnd(); f++) {
+			result.push_back(Expression(*f));
+		}
+	}
+	else if ((!nargs_equal(args, 2))) {
+		throw SemanticError("Error in call to join: invalid number of arguments, must be binary.");
+	}
+	else {
+		throw SemanticError("Error in call to join: first argument is not a list.");
+	}
+	return Expression(result);
+}
+
+// Adds an expression to the end of the list
+Expression range(const std::vector<Expression> & args) {
+	std::vector<Expression> result;
+	if ((nargs_equal(args, 3)) && (args[0].isHeadNumber()) && (args[1].isHeadNumber()) && (args[2].isHeadNumber())) {
+		if ((args[0].head().asNumber()) >= (args[1].head().asNumber())) {
+			throw SemanticError("Error in call to range: first argument must be less then second argument.");
+		}
+		if ((args[2].head().asNumber()) <= 0) {
+			throw SemanticError("Error in call to range: third argument must be strictly positive.");
+		}
+		for (double i = args[0].head().asNumber(); i <= args[1].head().asNumber(); i = i + args[2].head().asNumber()) {
+			result.push_back(Expression(i));
+		}
+	}
+	else if ((!nargs_equal(args, 3))) {
+		throw SemanticError("Error in call to range: invalid number of arguments, must be ternary.");
+	}
+	else if ((!args[0].isHeadNumber()) || (!args[1].isHeadNumber()) || (!args[2].isHeadNumber())) {
+		throw SemanticError("Error in call to range: all arguments must be numbers.");
+	}
+	return Expression(result);
 }
 
 const double PI = std::atan2(0, -1);
@@ -561,4 +644,16 @@ void Environment::reset(){
 
   // Procedure: rest;
   envmap.emplace("rest", EnvResult(ProcedureType, rest));
+
+  // Procedure: length;
+  envmap.emplace("length", EnvResult(ProcedureType, length));
+
+  // Procedure: append;
+  envmap.emplace("append", EnvResult(ProcedureType, append));
+
+  // Procedure: join;
+  envmap.emplace("join", EnvResult(ProcedureType, join));
+
+  // Procedure: range;
+  envmap.emplace("range", EnvResult(ProcedureType, range));
 }

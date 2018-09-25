@@ -436,8 +436,8 @@ TEST_CASE("Test arg procedure", "[environment]") {
 	Expression I = env.get_exp(Atom("I"));
 
 	INFO("trying arg with a complex")
-	args.emplace_back(I);
-	REQUIRE(parg(args) == Expression(1.5708));
+	args.emplace_back(std::complex<double> (0.0,0.0));
+	REQUIRE(parg(args) == Expression(std::complex<double> (0.0,0.0)));
 
 	INFO("trying arg to throw semantic error for invalid argument")
 	args.clear();
