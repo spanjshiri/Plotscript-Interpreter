@@ -227,10 +227,250 @@ TEST_CASE("Test pow procedure", "[environment]") {
 	Expression a(Atom("hello"));
 	env.add_exp(Atom("hi"), a);
 
-	INFO("trying pow with one positive number")
+	INFO("trying pow with base number and exponent number")
+	args.emplace_back(2.0);
+	args.emplace_back(5.0);
+	REQUIRE(ppow(args) == Expression(32.0));
+
+	INFO("trying pow with base number and exponent complex")
+	args.clear();
+	args.emplace_back(1.0);
+	args.emplace_back(I);
+	REQUIRE(ppow(args) == Expression(std::complex<double>(1.0, 0.0)));
+
+	INFO("trying pow with base complex and exponent number")
+	args.clear();
 	args.emplace_back(I);
 	args.emplace_back(5.0);
 	REQUIRE(ppow(args) == Expression(I));
+
+	INFO("trying pow with base complex and exponent complex")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE(ppow(args) == Expression(std::complex<double>(.20788, 0.0)));
+
+	INFO("trying pow procedure to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(ppow(args), SemanticError);
+
+	INFO("trying pow procedure to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(ppow(args), SemanticError);
+}
+
+TEST_CASE("Test ln procedure", "[environment]") {
+	Environment env;
+	Procedure pln = env.get_proc(Atom("ln"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying ln with a positive number")
+	args.emplace_back(1.0);
+	REQUIRE(pln(args) == Expression(0.0));
+
+	INFO("trying ln with a negative number to throw a semantic error")
+	args.clear();
+	args.emplace_back(-1.0);
+	REQUIRE_THROWS_AS(pln(args), SemanticError);
+
+	INFO("trying ln to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	REQUIRE_THROWS_AS(pln(args), SemanticError);
+
+	INFO("trying ln to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(2.0);
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(pln(args), SemanticError);
+}
+
+TEST_CASE("Test sin procedure", "[environment]") {
+	Environment env;
+	Procedure psin = env.get_proc(Atom("sin"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying sin with a number")
+	args.emplace_back(0.0);
+	REQUIRE(psin(args) == Expression(0.0));
+
+	INFO("trying sin to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	REQUIRE_THROWS_AS(psin(args), SemanticError);
+
+	INFO("trying sin to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(2.0);
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(psin(args), SemanticError);
+}
+
+TEST_CASE("Test cos procedure", "[environment]") {
+	Environment env;
+	Procedure pcos = env.get_proc(Atom("cos"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying cos with a number")
+	args.emplace_back(0.0);
+	REQUIRE(pcos(args) == Expression(1.0));
+
+	INFO("trying cos to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	REQUIRE_THROWS_AS(pcos(args), SemanticError);
+
+	INFO("trying cos to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(2.0);
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(pcos(args), SemanticError);
+}
+
+TEST_CASE("Test tan procedure", "[environment]") {
+	Environment env;
+	Procedure ptan = env.get_proc(Atom("tan"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+	Expression a(Atom("hello"));
+	env.add_exp(Atom("hi"), a);
+
+	INFO("trying tan with a number")
+	args.emplace_back(0.0);
+	REQUIRE(ptan(args) == Expression(0.0));
+
+	INFO("trying tan to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(Atom("hi"));
+	REQUIRE_THROWS_AS(ptan(args), SemanticError);
+
+	INFO("trying tan to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(2.0);
+	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(ptan(args), SemanticError);
+}
+
+TEST_CASE("Test real procedure", "[environment]") {
+	Environment env;
+	Procedure preal = env.get_proc(Atom("real"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying real with a complex")
+	args.emplace_back(I);
+	REQUIRE(preal(args) == Expression(0.0));
+
+	INFO("trying real to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(1.0);
+	REQUIRE_THROWS_AS(preal(args), SemanticError);
+
+	INFO("trying real to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE_THROWS_AS(preal(args), SemanticError);
+}
+
+TEST_CASE("Test imag procedure", "[environment]") {
+	Environment env;
+	Procedure pimag = env.get_proc(Atom("imag"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying imag with a complex")
+	args.emplace_back(I);
+	REQUIRE(pimag(args) == Expression(1.0));
+
+	INFO("trying imag to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(1.0);
+	REQUIRE_THROWS_AS(pimag(args), SemanticError);
+
+	INFO("trying imag to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE_THROWS_AS(pimag(args), SemanticError);
+}
+
+TEST_CASE("Test mag procedure", "[environment]") {
+	Environment env;
+	Procedure pmag = env.get_proc(Atom("mag"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying mag with a complex")
+	args.emplace_back(I);
+	REQUIRE(pmag(args) == Expression(1.0));
+
+	INFO("trying mag to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(1.0);
+	REQUIRE_THROWS_AS(pmag(args), SemanticError);
+
+	INFO("trying mag to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE_THROWS_AS(pmag(args), SemanticError);
+}
+
+TEST_CASE("Test arg procedure", "[environment]") {
+	Environment env;
+	Procedure parg = env.get_proc(Atom("arg"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying arg with a complex")
+	args.emplace_back(I);
+	REQUIRE(parg(args) == Expression(1.5708));
+
+	INFO("trying arg to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(1.0);
+	REQUIRE_THROWS_AS(parg(args), SemanticError);
+
+	INFO("trying arg to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE_THROWS_AS(parg(args), SemanticError);
+}
+
+TEST_CASE("Test conj procedure", "[environment]") {
+	Environment env;
+	Procedure pconj = env.get_proc(Atom("conj"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying conj with a complex")
+	args.emplace_back(I);
+	REQUIRE(pconj(args) == Expression(std::complex<double>(0.0,-1.0)));
+
+	INFO("trying conj to throw semantic error for invalid argument")
+	args.clear();
+	args.emplace_back(1.0);
+	REQUIRE_THROWS_AS(pconj(args), SemanticError);
+
+	INFO("trying conj to throw semantic error for invalid number of arguments")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE_THROWS_AS(pconj(args), SemanticError);
 }
 
 TEST_CASE( "Test reset", "[environment]" ) {

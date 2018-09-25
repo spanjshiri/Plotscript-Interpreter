@@ -24,6 +24,7 @@ Expression::Expression(const Expression & a){
 
 // List Constructor
 Expression::Expression(const std::vector<Expression> & list) {
+	m_head.setList();
 	m_tail = list;
 }
 
@@ -60,6 +61,10 @@ bool Expression::isHeadSymbol() const noexcept{
 
 bool Expression::isHeadComplex() const noexcept{
   return m_head.isComplex();
+}
+
+bool Expression::isHeadList() const noexcept {
+	return m_head.isList();
 }
 
 
@@ -233,7 +238,7 @@ bool Expression::operator==(const Expression & exp) const noexcept{
   bool result = (m_head == exp.m_head);
 
   result = result && (m_tail.size() == exp.m_tail.size());
-  //std::numeric_limits<double>::epsilon()
+
   if(result){
     for(auto lefte = m_tail.begin(), righte = exp.m_tail.begin();
 	(lefte != m_tail.end()) && (righte != exp.m_tail.end());

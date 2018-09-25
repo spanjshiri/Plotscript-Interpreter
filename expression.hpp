@@ -68,6 +68,9 @@ public:
   /// convenience member to determine if head atom is a complex
   bool isHeadComplex() const noexcept;
 
+  /// convenience member to determine if head atom is a list
+  bool isHeadList() const noexcept;
+
   /// Evaluate expression using a post-order traversal (recursive)
   Expression eval(Environment & env);
 
@@ -94,7 +97,7 @@ private:
   Expression handle_define(Environment & env);
   Expression handle_begin(Environment & env);
 
-  enum Type { NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind};
+  //enum Type { NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind};
 };
 
 /// Render expression to output stream

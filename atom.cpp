@@ -67,6 +67,9 @@ Atom & Atom::operator=(const Atom & x){
     else if(x.m_type == ComplexKind){
       setComplex(x.complexValue);
     }
+	else if (x.m_type == ListKind) {
+		setList();
+	}
   }
   return *this;
 }
@@ -95,6 +98,10 @@ bool Atom::isComplex() const noexcept{
   return m_type == ComplexKind;
 }
 
+bool Atom::isList() const noexcept {
+	return m_type == ListKind;
+}
+
 void Atom::setNumber(double value){
 
   m_type = NumberKind;
@@ -117,6 +124,10 @@ void Atom::setSymbol(const std::string & value){
 void Atom::setComplex(const std::complex<double> value){
   m_type = ComplexKind;
   complexValue = value;
+}
+
+void Atom::setList() {
+	m_type = ListKind;
 }
 
 double Atom::asNumber() const noexcept{
@@ -164,7 +175,7 @@ bool Atom::operator==(const Atom & right) const noexcept{
       double dright = right.numberValue;
       double diff = fabs(dleft - dright);
       if(std::isnan(diff) ||
-	 (diff > std::numeric_limits<double>::epsilon())) return false;
+	 (diff > std::numeric_limits<double>::epsilon()*2)) return false;
     }
     break;
   case SymbolKind:
@@ -177,7 +188,11 @@ bool Atom::operator==(const Atom & right) const noexcept{
   case ComplexKind:
   {
     if(right.m_type != ComplexKind) return false;
-
+	std::complex<double> dleft = complexValue;
+	std::complex<double> dright = right.complexValue;
+	double diff = std::abs(dleft - dright);
+	if (std::isnan(diff) ||
+    (diff > std::numeric_limits<double>::epsilon()*2)) return false;
     return complexValue == right.complexValue;
   }
   break;
