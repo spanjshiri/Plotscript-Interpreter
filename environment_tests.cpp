@@ -489,6 +489,201 @@ TEST_CASE("Test List procedure", "[environment]") {
 	std::vector<Expression> args;
 	Expression I = env.get_exp(Atom("I"));
 
+	INFO("trying list to create a list")
+	args.clear();
+	args.emplace_back(Expression(0.0));
+	args.emplace_back(Expression(1.0));
+	args.emplace_back(Expression(2.0));
+	REQUIRE(plist(args).isHeadList());
+	std::vector<Expression> testList = { Expression(0.0), Expression(1.0), Expression(2.0) };
+	REQUIRE(plist(args) == Expression(testList));
+}
+
+TEST_CASE("Test First procedure", "[environment]") {
+	Environment env;
+	Procedure plist = env.get_proc(Atom("list"));
+	Procedure pfirst = env.get_proc(Atom("first"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying first with one list")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	args.emplace_back(Expression(2.0));
+	args.emplace_back(Expression(3.0));
+	std::vector<Expression> testList = { plist(args) };
+	REQUIRE(pfirst(testList) == Expression(1.0));
+
+	INFO("trying first with one invalid argument")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	REQUIRE_THROWS_AS(pfirst(args), SemanticError);
+
+	INFO("trying first with empty list")
+	args.clear();
+	std::vector<Expression> testList1 = { plist(args) };
+	REQUIRE_THROWS_AS(pfirst(testList1), SemanticError);
+
+	INFO("trying first with invalid number of arguments")
+	args.clear();
+	std::vector<Expression> testList2 = { plist(args),plist(testList1) };
+	REQUIRE_THROWS_AS(pfirst(testList2), SemanticError);
+}
+
+TEST_CASE("Test Rest procedure", "[environment]") {
+	Environment env;
+	Procedure plist = env.get_proc(Atom("list"));
+	Procedure prest = env.get_proc(Atom("rest"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying rest with one list")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	args.emplace_back(Expression(2.0));
+	args.emplace_back(Expression(3.0));
+	std::vector<Expression> testList = { plist(args) };
+	std::vector<Expression> testList3 = { Expression(2.0),Expression(3.0) };
+	REQUIRE(prest(testList) == plist(testList3));
+
+	INFO("trying rest with one invalid argument")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	REQUIRE_THROWS_AS(prest(args), SemanticError);
+
+	INFO("trying rest with empty list")
+	args.clear();
+	std::vector<Expression> testList1 = { plist(args) };
+	REQUIRE_THROWS_AS(prest(testList1), SemanticError);
+
+	INFO("trying rest with invalid number of arguments")
+	args.clear();
+	std::vector<Expression> testList2 = { plist(args),plist(testList1) };
+	REQUIRE_THROWS_AS(prest(testList2), SemanticError);
+}
+
+TEST_CASE("Test Length procedure", "[environment]") {
+	Environment env;
+	Procedure plist = env.get_proc(Atom("list"));
+	Procedure plength = env.get_proc(Atom("length"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying length with one list")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	args.emplace_back(Expression(2.0));
+	args.emplace_back(Expression(3.0));
+	std::vector<Expression> testList = { plist(args) };
+	REQUIRE(plength(testList) == Expression(3.0));
+
+	INFO("trying length with one invalid argument")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	REQUIRE_THROWS_AS(plength(args), SemanticError);
+
+	INFO("trying length with empty list")
+	args.clear();
+	std::vector<Expression> testList1 = { plist(args) };
+	REQUIRE(plength(testList1) == Expression(0.0));
+
+	INFO("trying rest with invalid number of arguments")
+	args.clear();
+	std::vector<Expression> testList2 = { plist(args),plist(testList1) };
+	REQUIRE_THROWS_AS(plength(testList2), SemanticError);
+}
+
+TEST_CASE("Test Append procedure", "[environment]") {
+Environment env;
+Procedure plist = env.get_proc(Atom("list"));
+Procedure pappend = env.get_proc(Atom("append"));
+std::vector<Expression> args;
+Expression I = env.get_exp(Atom("I"));
+
+INFO("trying append with one list and expression")
+args.clear();
+args.emplace_back(Expression(1.0));
+args.emplace_back(Expression(2.0));
+args.emplace_back(Expression(3.0));
+std::vector<Expression> testList = { plist(args) };
+Expression exp = Expression(4.0);
+std::vector<Expression> testList5 = { testList, exp };
+std::vector<Expression> testList6 = { plist(args), Expression(4.0) };
+REQUIRE(pappend(testList5) == plist(testList6));
+
+INFO("trying append with invalid number of arguments")
+Expression exp2 = Expression(5.0);
+std::vector<Expression> testList2 = { plist(args), exp, exp2 };
+REQUIRE_THROWS_AS(pappend(testList2), SemanticError);
+
+INFO("trying append with invalid number of arguments")
+std::vector<Expression> testList3 = { exp, exp2 };
+REQUIRE_THROWS_AS(pappend(testList3), SemanticError);
+
+INFO("trying append with one invalid argument")
+args.clear();
+args.emplace_back(Expression(1.0));
+REQUIRE_THROWS_AS(pappend(args), SemanticError);
+}
+
+TEST_CASE("Test Join procedure", "[environment]") {
+	Environment env;
+	Procedure plist = env.get_proc(Atom("list"));
+	Procedure pjoin = env.get_proc(Atom("join"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying join with two lists")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	args.emplace_back(Expression(2.0));
+	args.emplace_back(Expression(3.0));
+	std::vector<Expression> testList = { plist(args), plist(args) };
+	std::vector<Expression> testList6 = { Expression(1.0),Expression(2.0),Expression(3.0),Expression(1.0),Expression(2.0),Expression(3.0) };
+	REQUIRE(pjoin(testList) == plist(testList6));
+
+	INFO("trying join with invalid number of arguments")
+	Expression exp1 = Expression(5.0);
+	Expression exp2 = Expression(5.0);
+	std::vector<Expression> testList2 = { plist(args), plist(args), plist(args)};
+	REQUIRE_THROWS_AS(pjoin(testList2), SemanticError);
+
+	INFO("trying join with invalid number of arguments")
+	std::vector<Expression> testList3 = { exp1, exp2 };
+	REQUIRE_THROWS_AS(pjoin(testList3), SemanticError);
+}
+
+TEST_CASE("Test Range procedure", "[environment]") {
+	Environment env;
+	Procedure plist = env.get_proc(Atom("list"));
+	Procedure prange = env.get_proc(Atom("range"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
+	INFO("trying range with 3 numbers and no errors")
+	args.clear();
+	args.emplace_back(Expression(1.0));
+	args.emplace_back(Expression(2.0));
+	args.emplace_back(Expression(3.0));
+	std::vector<Expression> testList = { Expression(0.0),Expression(1.0),Expression(0.25) };
+	std::vector<Expression> testList6 = { Expression(0.0),Expression(0.25),Expression(0.50),Expression(0.75),Expression(1.0) };
+	REQUIRE(prange(testList) == plist(testList6));
+
+	INFO("trying range with 3 numbers and arg0 > arg1 to throw semantic error")
+	std::vector<Expression> testList1 = { Expression(1.0),Expression(0.0),Expression(0.25) };
+	REQUIRE_THROWS_AS(prange(testList1), SemanticError);
+
+	INFO("trying range with 3 numbers and arg2 <= 0 to throw semantic error")
+	std::vector<Expression> testList2 = { Expression(0.0),Expression(2.0),Expression(-1.0) };
+	REQUIRE_THROWS_AS(prange(testList2), SemanticError);
+
+	INFO("trying range with invalid number of arguments to throw semantic error")
+	std::vector<Expression> testList3 = { Expression(0.0),Expression(2.0) };
+	REQUIRE_THROWS_AS(prange(testList3), SemanticError);
+
+	INFO("trying range with atleast one argument not a number to throw semantic error")
+	std::vector<Expression> testList4 = { Expression(I),Expression(2.0),Expression(-1.0) };
+	REQUIRE_THROWS_AS(prange(testList4), SemanticError);
 }
 
 TEST_CASE( "Test reset", "[environment]" ) {

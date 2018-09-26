@@ -436,11 +436,6 @@ Expression length(const std::vector<Expression> & args) {
 			count++;
 		}
 	}
-	else if (nargs_equal(args, 0) && (args[0].isHeadList())) {
-		if (args[0] == Expression()) {
-			return Expression(count);
-		}
-	}
 	else {
 		throw SemanticError("Error in call to length: argument is not a list.");
 	}

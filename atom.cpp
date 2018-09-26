@@ -195,6 +195,11 @@ bool Atom::operator==(const Atom & right) const noexcept{
     (diff.real() > std::numeric_limits<double>::epsilon()*2.0) || (diff.imag() > std::numeric_limits<double>::epsilon()*2.0)) return false;
   }
   break;
+  case ListKind:
+  {
+	  if (right.m_type != ListKind) return false;
+  }
+  break;
   default:
     return false;
   }
