@@ -126,30 +126,35 @@ Expression subneg(const std::vector<Expression> & args){
 
 Expression div(const std::vector<Expression> & args){
 
-  std::complex<double> result (0.0,0.0); 
+  std::complex<double> result (1.0,0.0); 
   bool complexArgs = false;
-  // check all arguments are number or complex while dividing
-  if(nargs_equal(args,2)){
-    if( (args[0].isHeadNumber()) && (args[1].isHeadNumber()) ){
-      result = args[0].head().asNumber() / args[1].head().asNumber();
-    }
-    else if( (args[0].isHeadComplex()) && (args[1].isHeadComplex()) ){
-      complexArgs = true;
-      result = args[0].head().asComplex() / args[1].head().asComplex();
-    }
-    else if( (args[0].isHeadComplex()) && (args[1].isHeadNumber()) ) {
-      complexArgs = true;
-      result = args[0].head().asComplex() / args[1].head().asComplex();
-    }
-    else if( (args[0].isHeadNumber()) && (args[1].isHeadComplex()) ){
-      result = args[0].head().asComplex() / args[1].head().asComplex();
-    }
-    else{      
-      throw SemanticError("Error in call to division: invalid argument.");
-    }
+  if (nargs_equal(args, 1)) {
+	  if ((args[0].isHeadComplex())) {
+		  complexArgs = true;
+		  result /= args[0].head().asComplex();
+	  }
+	  else if (args[0].isHeadNumber()) {
+		  result = 1 / args[0].head().asNumber();
+	  }
+	  else {
+		  throw SemanticError("Error in call to division: invalid argument.");
+	  }
   }
-  else{
-    throw SemanticError("Error in call to division: invalid number of arguments.");
+  // check all arguments are number or complex while dividing
+  else {
+	  result = std::pow(args[0].head().asComplex(),2);
+	  for (auto & a : args) {
+		  if (a.isHeadNumber()) {
+			  result /= a.head().asNumber();
+		  }
+		  else if (a.isHeadComplex()) {
+			  complexArgs = true;
+			  result /= a.head().asComplex();
+		  }
+		  else {
+			  throw SemanticError("Error in call to division: invalid argument.");
+		  }
+	  }
   }
   // Returns number if no complex
   if(result.imag() == 0 && complexArgs == false) {
@@ -228,9 +233,9 @@ Expression ln(const std::vector<Expression> & args){
       if( (args[0].isHeadNumber()) ){
         result = std::log(args[0].head().asNumber());
       }
-      else{      
+      /*else{      
         throw SemanticError("Error in call to ln: invalid argument.");
-      }
+      }*/
     }
     else{
       throw SemanticError("Error in call to ln: negative numbers are not allowed.");

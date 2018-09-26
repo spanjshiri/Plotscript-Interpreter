@@ -160,10 +160,15 @@ TEST_CASE("Test div procedure", "[environment]") {
 	Expression a(Atom("hello"));
 	env.add_exp(Atom("hi"), a);
 
-	INFO("trying div with one number to throw a semantic error")
+	INFO("trying div with one number")
 	args.clear();
 	args.emplace_back(5.0);
-	REQUIRE_THROWS_AS(pdiv(args), SemanticError);
+	REQUIRE(pdiv(args) == Expression(.2));
+
+	INFO("trying div with one complex")
+	args.clear();
+	args.emplace_back(I);
+	REQUIRE(pdiv(args) == Expression(std::complex<double>(0.0, -1.0)));
 
 	INFO("trying div procedure with a complex divided by complex")
 	args.clear();
@@ -183,10 +188,15 @@ TEST_CASE("Test div procedure", "[environment]") {
 	args.emplace_back(1.0);
 	REQUIRE(pdiv(args) == Expression(std::complex<double>(0.0, 1.0)));
 
-	INFO("trying div procedure to throw semantic error")
+	INFO("trying div procedure to throw semantic error with multiple arguments")
 	args.clear();
 	args.emplace_back(Atom("hi"));
 	args.emplace_back(2.0);
+	REQUIRE_THROWS_AS(pdiv(args), SemanticError);
+
+	INFO("trying div procedure to throw semantic error with one argument")
+	args.clear();
+	args.emplace_back(Atom("hi"));
 	REQUIRE_THROWS_AS(pdiv(args), SemanticError);
 }
 
@@ -471,6 +481,14 @@ TEST_CASE("Test conj procedure", "[environment]") {
 	args.emplace_back(I);
 	args.emplace_back(I);
 	REQUIRE_THROWS_AS(pconj(args), SemanticError);
+}
+
+TEST_CASE("Test List procedure", "[environment]") {
+	Environment env;
+	Procedure plist = env.get_proc(Atom("list"));
+	std::vector<Expression> args;
+	Expression I = env.get_exp(Atom("I"));
+
 }
 
 TEST_CASE( "Test reset", "[environment]" ) {
