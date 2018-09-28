@@ -105,6 +105,13 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
 		Expression newExp = newEnv.get_exp(op);
 		Expression newArgs = *newExp.tailConstBegin();
 		std::vector<Expression> vec = {  };
+		for (auto e = (args[0].tailConstBegin()); e != args[0].tailConstEnd(); e++) {
+			index++;
+		}
+		if (args.size() != index) {
+			throw SemanticError("Error: during apply : Error in call to procedure : invalid number of arguments.");
+		}
+		index = 0;
 		for (auto e = (newArgs.tailConstBegin()); e != newArgs.tailConstEnd(); e++) {
 			std::string str = (*e).head().asSymbol();
 			newEnv.findProc(str, newEnv);
@@ -129,6 +136,7 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
   // call proc with args
   return proc(args);
 }
+
 
 Expression apply(const std::vector<Expression> & args) {
 	return Expression();
@@ -165,6 +173,46 @@ Expression Expression::handle_apply(Environment & env) {
 	}
 	return apply(m_tail[0].head(), vec, env);
 	
+}
+
+// Adds apply functionality for a list
+Expression Expression::handle_map(Environment & env) {
+	std::vector<Expression> vec = {};
+	std::vector<Expression> vec2 = {};
+	Expression exp = m_tail[1].eval(env);
+
+	if (!exp.isHeadList()) {
+		throw SemanticError("Error during evaluation: second argument must be a list");
+	}
+	// tail must have size 3 or error
+	if (m_tail.size() != 2) {
+		throw SemanticError("Error during evaluation: invalid number of arguments to apply");
+	}
+	if (env.is_exp(m_tail[0].head())) {
+		for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
+			vec2.push_back(*e);
+			Expression newexp = apply(m_tail[0].head(), vec2, env);
+			vec2.clear();
+			vec.push_back(newexp);
+		}
+		return Expression(vec);
+	}
+	int index = 0;
+	for (auto e = (m_tail[0].tailConstBegin()); e != m_tail[0].tailConstEnd(); e++) {
+		index++;
+	}
+	if (!env.is_proc(m_tail[0].head()) || index != 0) {
+
+		throw SemanticError("Error during evaluation: first argument must be a procedure");
+	}
+	for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
+		vec2.push_back(*e);
+		Expression newexp = apply(m_tail[0].head(), vec2, env);
+		vec2.clear();
+		vec.push_back(newexp);
+	}
+	return Expression(vec);
+
 }
 
 Expression Expression::handle_lookup(const Atom & head, const Environment & env){
@@ -291,6 +339,10 @@ Expression Expression::eval(Environment & env){
   // handle apply special-form
   if (m_head.isSymbol() && m_head.asSymbol() == "apply") {
 	  return handle_apply(env);
+  }
+  // handle map special-form
+  if (m_head.isSymbol() && m_head.asSymbol() == "map") {
+	  return handle_map(env);
   }
   // handle begin special-form
   else if(m_head.isSymbol() && m_head.asSymbol() == "begin"){

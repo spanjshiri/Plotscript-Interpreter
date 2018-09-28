@@ -101,6 +101,7 @@ private:
   Expression handle_begin(Environment & env);
   Expression handle_lambda(Environment & env);
   Expression handle_apply(Environment & env);
+  Expression handle_map(Environment & env);
 
   //enum Type { NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind};
 };
