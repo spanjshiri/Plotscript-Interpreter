@@ -102,9 +102,9 @@ bool Atom::isList() const noexcept {
 	return m_type == ListKind;
 }
 
-bool Atom::isLambda() const noexcept {
+/*bool Atom::isLambda() const noexcept {
 	return m_type == LambdaKind;
-}
+}*/
 
 void Atom::setNumber(double value){
 

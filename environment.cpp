@@ -508,6 +508,7 @@ Expression range(const std::vector<Expression> & args) {
 	return Expression(result);
 }
 
+// A Helper function used in environment to help solve shadowing when using lambda
 void Environment::findProc(const std::string & str, Environment & env) {
 	if (env.envmap.find(str) != env.envmap.end()) {
 		env.envmap.erase(str);

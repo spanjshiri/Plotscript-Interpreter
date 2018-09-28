@@ -21,12 +21,13 @@ Expression::Expression(const Expression & a){
   }
 }
 
-// List Constructor
+// List Constructor for Expression Object
 Expression::Expression(const std::vector<Expression> & list) {
 	m_head.setList();
 	m_tail = list;
 }
 
+// Lambda Constructor for Expression object
 Expression::Expression(const std::vector<Expression> & args, const Atom & a) {
 	m_head = a;
 	for (auto e : args) {
@@ -34,6 +35,7 @@ Expression::Expression(const std::vector<Expression> & args, const Atom & a) {
 	}
 }
 
+// Assignment operator for Expression
 Expression & Expression::operator=(const Expression & a){
 
   // prevent self-assignment
@@ -97,6 +99,7 @@ Expression::ConstIteratorType Expression::tailConstEnd() const noexcept{
   return m_tail.cend();
 }
 
+// Apply function used for simple and lambda kind which calls eval on the expression
 Expression apply(const Atom & op, const std::vector<Expression> & args, const Environment & env){
   // need to create a new environment to use for the 1st one
 	if (env.is_exp(op)) {
@@ -138,17 +141,17 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
   return proc(args);
 }
 
-// Adds apply functionality for a list
+// Adds apply functionality for a list 
 Expression Expression::handle_apply(Environment & env) {
+	// tail must have size 2 or error
+	if (m_tail.size() != 2) {
+		throw SemanticError("Error during evaluation: invalid number of arguments to apply");
+	}
 	std::vector<Expression> vec = {};
 	Expression exp = m_tail[1].eval(env);
 
 	if (!exp.isHeadList()) {
 		throw SemanticError("Error during evaluation: second argument must be a list");
-	}
-	// tail must have size 3 or error
-	if (m_tail.size() != 2) {
-		throw SemanticError("Error during evaluation: invalid number of arguments to apply");
 	}
 	if (env.is_exp(m_tail[0].head())) {
 		for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
@@ -171,7 +174,7 @@ Expression Expression::handle_apply(Environment & env) {
 	
 }
 
-// Adds apply functionality for a list
+// Adds map functionality for a list
 Expression Expression::handle_map(Environment & env) {
 	std::vector<Expression> vec = {};
 	std::vector<Expression> vec2 = {};

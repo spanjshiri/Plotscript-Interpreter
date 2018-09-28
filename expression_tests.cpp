@@ -1,6 +1,7 @@
 #include "catch.hpp"
 
 #include "expression.hpp"
+#include "environment.hpp"
 
 TEST_CASE( "Test default expression", "[expression]" ) {
 
@@ -8,6 +9,16 @@ TEST_CASE( "Test default expression", "[expression]" ) {
 
   REQUIRE(!exp.isHeadNumber());
   REQUIRE(!exp.isHeadSymbol());
+}
+
+TEST_CASE("Test expression with Lambda Constructor for Expression", "[expression]") {
+	std::vector<Expression> args = {};
+	args.push_back(Expression(3.0));
+	Atom head;
+	Expression exp(args, head);
+
+	REQUIRE(!exp.isHeadNumber());
+	REQUIRE(!exp.isHeadSymbol());
 }
 
 TEST_CASE( "Test double expression", "[expression]" ) {

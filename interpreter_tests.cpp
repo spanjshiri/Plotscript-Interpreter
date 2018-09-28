@@ -40,6 +40,117 @@ TEST_CASE( "Test Interpreter parser with expected input", "[interpreter]" ) {
   REQUIRE(ok == true);
 }
 
+TEST_CASE("Test Interpreter parser with handle_lambda", "[interpreter]") {
+
+	std::string program = "(begin (define func (lambda (x y) (* x y))) (func 2 5))";
+
+	std::istringstream iss(program);
+
+	Interpreter interp;
+
+	bool ok = interp.parseStream(iss);
+
+	REQUIRE(ok == true);
+	REQUIRE(interp.evaluate() == Expression(10));
+}
+TEST_CASE("Test Interpreter parser to lambda should return invalid number of arguments", "[interpreter]") {
+
+	INFO("Testing apply with lambda")
+	std::string program = "(lambda (x) (+ x y))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser with apply for lambda", "[interpreter]") {
+
+	INFO("Testing apply with lambda")
+	std::string program = "(begin (define complexAsList (lambda (x) (list (real x) (imag x)))) (apply complexAsList (list (+ 1 (* 3 I)))))";
+	Expression value = run(program);
+	std::vector<Expression> args = { Expression(1),Expression(3) };
+	REQUIRE(value == Expression(args));
+}
+
+TEST_CASE("test Interpreter parser to apply with simple case", "[interpreter]") {
+	std::string program = "(apply + (list 1 2 3 4))";
+	Expression value = run(program);
+	REQUIRE(value == Expression(10));
+}
+
+TEST_CASE("Test Interpreter parser to throw semantic error for apply", "[interpreter]") {
+
+	INFO("Should return invalid number of arguments in apply")
+	std::string program = "(begin (define linear (lambda (a b x) (+ (* a x) b))) (apply linear (3 4 5)))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser to apply should return invalid number of arguments", "[interpreter]") {
+
+	INFO("Should return invalid number of arguments in apply")
+	std::string program = "(apply / (list 1 2 4))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser to apply should return first argument is not a procedure", "[interpreter]") {
+	INFO("Should return invalid number of arguments in apply")
+	std::string program = "(apply (+ z I) (list 0))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("test Interpreter parser to apply with lambda case", "[interpreter]") {
+	std::string program = "(begin (define linear (lambda (a b x) (+ (* a x) b))) (apply linear (list 3 4 5)))";
+	Expression value = run(program);
+	REQUIRE(value == Expression(19));
+}
+
+TEST_CASE("test Interpreter parser to map with simple case", "[interpreter]") {
+	std::string program = "(map / (list 1 2 4))";
+	Expression value = run(program);
+	std::vector<Expression> args = { Expression(1),Expression(0.5),Expression(0.25) };
+	REQUIRE(value == Expression(args));
+}
+
+TEST_CASE("test Interpreter parser to map with lambda case", "[interpreter]") {
+	std::string program = "(begin (define f (lambda (x) (sin x))) (map f (list (- pi) (/ (- pi) 2) 0 (/ pi 2) pi)))";
+	Expression value = run(program);
+	std::vector<Expression> args = { Expression(-1.22465e-16),Expression(-1),Expression(0),Expression(1),Expression(1.22465e-16) };
+	REQUIRE(value == Expression(args));
+}
+
+TEST_CASE("Test Interpreter parser to map should return second argument to map not a list", "[interpreter]") {
+	std::string program = "(map + 3)";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser to map should return first argument to map not a procedure", "[interpreter]") {
+	std::string program = "(map 3 (list 1 2 3))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser to map should return invalid arguments in apply", "[interpreter]") {
+
+	INFO("Should return invalid number of arguments in apply")
+		std::string program = "(begin (define addtwo (lambda (x y) (+ x y))) (map addtwo (list 1 2 3)))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+	INFO("Should return error as it is not a procedure")
+		std::string program1 = "(begin (apply + 3))";
+	std::istringstream iss1(program1);
+	Interpreter interp1;
+	REQUIRE_THROWS_AS(interp1.evaluate(), SemanticError);
+}
+
 TEST_CASE( "Test Interpreter parser with numerical literals", "[interpreter]" ) {
 
   std::vector<std::string> programs = {"(1)", "(+1)", "(+1e+0)", "(1e-0)"};

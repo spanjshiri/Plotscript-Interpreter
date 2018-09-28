@@ -188,6 +188,13 @@ TEST_CASE("Test div procedure", "[environment]") {
 	args.emplace_back(1.0);
 	REQUIRE(pdiv(args) == Expression(std::complex<double>(0.0, 1.0)));
 
+	INFO("trying div procedure to throw semantic error with more than 3 arguments")
+	args.clear();
+	args.emplace_back(I);
+	args.emplace_back(I);
+	args.emplace_back(I);
+	REQUIRE_THROWS_AS(pdiv(args), SemanticError);
+
 	INFO("trying div procedure to throw semantic error with multiple arguments")
 	args.clear();
 	args.emplace_back(Atom("hi"));
