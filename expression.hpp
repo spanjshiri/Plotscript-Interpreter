@@ -103,7 +103,6 @@ private:
   Expression handle_apply(Environment & env);
   Expression handle_map(Environment & env);
 
-  //enum Type { NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind};
 };
 
 /// Render expression to output stream

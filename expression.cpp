@@ -100,11 +100,12 @@ Expression::ConstIteratorType Expression::tailConstEnd() const noexcept{
 Expression apply(const Atom & op, const std::vector<Expression> & args, const Environment & env){
   // need to create a new environment to use for the 1st one
 	if (env.is_exp(op)) {
-		int index = 0;
+		uint8_t index = 0;
 		Environment newEnv = env;
 		Expression newExp = newEnv.get_exp(op);
 		Expression newArgs = *newExp.tailConstBegin();
 		std::vector<Expression> vec = {  };
+		args[0].head();
 		for (auto e = (args[0].tailConstBegin()); e != args[0].tailConstEnd(); e++) {
 			index++;
 		}
@@ -137,10 +138,6 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
   return proc(args);
 }
 
-
-Expression apply(const std::vector<Expression> & args) {
-	return Expression();
-}
 
 // Adds apply functionality for a list
 Expression Expression::handle_apply(Environment & env) {
