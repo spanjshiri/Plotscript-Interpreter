@@ -138,9 +138,7 @@ Expression apply(const std::vector<Expression> & args) {
 Expression Expression::handle_apply(Environment & env) {
 	std::vector<Expression> vec = {};
 	Expression exp = m_tail[1].eval(env);
-	if (!env.is_proc(m_tail[0].head())) {
-		throw SemanticError("Error during evaluation: first argument must be a procedure");
-	}
+
 	if (!exp.isHeadList()) {
 		throw SemanticError("Error during evaluation: second argument must be a list");
 	}
@@ -148,10 +146,25 @@ Expression Expression::handle_apply(Environment & env) {
 	if (m_tail.size() != 2) {
 		throw SemanticError("Error during evaluation: invalid number of arguments to apply");
 	}
+	if (env.is_exp(m_tail[0].head())) {
+		for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
+			vec.push_back(*e);
+		}
+		return apply(m_tail[0].head(), vec, env);
+	}
+	int index = 0;
+	for (auto e = (m_tail[0].tailConstBegin()); e != m_tail[0].tailConstEnd(); e++) {
+		index++;
+	}
+	if (!env.is_proc(m_tail[0].head()) || index != 0) {
+
+		throw SemanticError("Error during evaluation: first argument must be a procedure");
+	}
 	for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
 		vec.push_back(*e);
 	}
 	return apply(m_tail[0].head(), vec, env);
+	
 }
 
 Expression Expression::handle_lookup(const Atom & head, const Environment & env){

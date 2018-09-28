@@ -143,7 +143,7 @@ Expression div(const std::vector<Expression> & args){
 	  }
   }
   // check all arguments are number or complex while dividing
-  else {
+  else if(nargs_equal(args, 2)) {
 	  result = std::pow(args[0].head().asComplex(),2);
 	  for (auto & a : args) {
 		  if (a.isHeadNumber()) {
@@ -157,6 +157,9 @@ Expression div(const std::vector<Expression> & args){
 			  throw SemanticError("Error in call to division: invalid argument.");
 		  }
 	  }
+  }
+  else {
+	  throw SemanticError("Error in call to division: invalid number of arguments.");
   }
   // Returns number if no complex
   if(result.imag() == 0 && complexArgs == false) {
