@@ -462,7 +462,7 @@ Expression append(const std::vector<Expression> & args) {
 	return Expression(result);
 }
 
-// Adds an expression to the end of the list
+// Joins two lists together
 Expression join(const std::vector<Expression> & args) {
 	std::vector<Expression> result;
 	if ((nargs_equal(args, 2)) && (args[0].isHeadList()) && (args[1].isHeadList())) {
@@ -482,7 +482,7 @@ Expression join(const std::vector<Expression> & args) {
 	return Expression(result);
 }
 
-// Adds an expression to the end of the list
+// Creates a list with passed parameter of start,end, and increment
 Expression range(const std::vector<Expression> & args) {
 	std::vector<Expression> result;
 	if ((nargs_equal(args, 3)) && (args[0].isHeadNumber()) && (args[1].isHeadNumber()) && (args[2].isHeadNumber())) {

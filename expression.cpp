@@ -27,12 +27,12 @@ Expression::Expression(const std::vector<Expression> & list) {
 	m_tail = list;
 }
 
-/*Expression::Expression(const std::vector<Expression> & args, const Atom & a) {
+Expression::Expression(const std::vector<Expression> & args, const Atom & a) {
 	m_head = a;
 	for (auto e : args) {
 		m_tail.push_back(e);
 	}
-}*/
+}
 
 Expression & Expression::operator=(const Expression & a){
 
@@ -128,6 +128,30 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
   
   // call proc with args
   return proc(args);
+}
+
+Expression apply(const std::vector<Expression> & args) {
+	return Expression();
+}
+
+// Adds apply functionality for a list
+Expression Expression::handle_apply(Environment & env) {
+	std::vector<Expression> vec = {};
+	Expression exp = m_tail[1].eval(env);
+	if (!env.is_proc(m_tail[0].head())) {
+		throw SemanticError("Error during evaluation: first argument must be a procedure");
+	}
+	if (!exp.isHeadList()) {
+		throw SemanticError("Error during evaluation: second argument must be a list");
+	}
+	// tail must have size 3 or error
+	if (m_tail.size() != 2) {
+		throw SemanticError("Error during evaluation: invalid number of arguments to apply");
+	}
+	for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
+		vec.push_back(*e);
+	}
+	return apply(m_tail[0].head(), vec, env);
 }
 
 Expression Expression::handle_lookup(const Atom & head, const Environment & env){
@@ -250,6 +274,10 @@ Expression Expression::eval(Environment & env){
   // handle labda special-form
   if (m_head.isSymbol() && m_head.asSymbol() == "lambda") {
 	  return handle_lambda(env);
+  }
+  // handle apply special-form
+  if (m_head.isSymbol() && m_head.asSymbol() == "apply") {
+	  return handle_apply(env);
   }
   // handle begin special-form
   else if(m_head.isSymbol() && m_head.asSymbol() == "begin"){
