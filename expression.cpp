@@ -100,13 +100,13 @@ Expression::ConstIteratorType Expression::tailConstEnd() const noexcept{
 Expression apply(const Atom & op, const std::vector<Expression> & args, const Environment & env){
   // need to create a new environment to use for the 1st one
 	if (env.is_exp(op)) {
-		uint8_t index = 0;
+		args[0].head();
+		uint64_t index = 0;
 		Environment newEnv = env;
 		Expression newExp = newEnv.get_exp(op);
 		Expression newArgs = *newExp.tailConstBegin();
 		std::vector<Expression> vec = {  };
-		args[0].head();
-		for (auto e = (args[0].tailConstBegin()); e != args[0].tailConstEnd(); e++) {
+		for (auto f = (newArgs.tailConstBegin()); f != newArgs.tailConstEnd(); f++) {
 			index++;
 		}
 		if (args.size() != index) {
@@ -137,7 +137,6 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
   // call proc with args
   return proc(args);
 }
-
 
 // Adds apply functionality for a list
 Expression Expression::handle_apply(Environment & env) {
@@ -199,7 +198,6 @@ Expression Expression::handle_map(Environment & env) {
 		index++;
 	}
 	if (!env.is_proc(m_tail[0].head()) || index != 0) {
-
 		throw SemanticError("Error during evaluation: first argument must be a procedure");
 	}
 	for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {
@@ -209,7 +207,6 @@ Expression Expression::handle_map(Environment & env) {
 		vec.push_back(newexp);
 	}
 	return Expression(vec);
-
 }
 
 Expression Expression::handle_lookup(const Atom & head, const Environment & env){
@@ -332,6 +329,10 @@ Expression Expression::eval(Environment & env){
   // handle labda special-form
   if (m_head.isSymbol() && m_head.asSymbol() == "lambda") {
 	  return handle_lambda(env);
+  }
+  // handle map special-form
+  if (m_head.isSymbol() && m_head.asSymbol() == "map") {
+	  return handle_map(env);
   }
   // handle apply special-form
   if (m_head.isSymbol() && m_head.asSymbol() == "apply") {
