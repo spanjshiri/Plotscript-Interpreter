@@ -38,6 +38,9 @@ public:
   // List Constructor
   Expression(const std::vector<Expression> & list);
 
+  // Lambda Constructor
+  //Expression(const std::vector<Expression> & args, const Atom & a);
+
   /// deep-copy assign an expression  (recursive)
   Expression & operator=(const Expression & a);
 
@@ -96,6 +99,7 @@ private:
   Expression handle_lookup(const Atom & head, const Environment & env);
   Expression handle_define(Environment & env);
   Expression handle_begin(Environment & env);
+  Expression handle_lambda(Environment & env);
 
   //enum Type { NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind};
 };

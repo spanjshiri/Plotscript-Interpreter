@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <string>
+#include <map>
 
 #include "environment.hpp"
 #include "semantic_error.hpp"
@@ -503,13 +505,32 @@ Expression range(const std::vector<Expression> & args) {
 	return Expression(result);
 }
 
+void Environment::findProc(const std::string & str, Environment & env) {
+	if (env.envmap.find(str) != env.envmap.end()) {
+		env.envmap.erase(str);
+	}
+}
+
 const double PI = std::atan2(0, -1);
 const double EXP = std::exp(1);
 const std::complex<double> I (0.0,1.0);
 
 Environment::Environment(){
-
   reset();
+}
+
+//copy construtor for Environment
+Environment::Environment(const Environment & a) {
+	envmap = a.envmap;
+}
+
+Environment & Environment::operator=(const Environment & a) {
+	// prevent self-assignment
+	if (this != &a) {
+		envmap = a.envmap;
+	}
+
+	return *this;
 }
 
 bool Environment::is_known(const Atom & sym) const{
@@ -547,7 +568,7 @@ void Environment::add_exp(const Atom & sym, const Expression & exp){
     
   // error if overwriting symbol map
   if(envmap.find(sym.asSymbol()) != envmap.end()){
-    throw SemanticError("Attempt to overwrite symbol in environemnt");
+    throw SemanticError("Attempt to overwrite symbol in environment");
   }
 
   envmap.emplace(sym.asSymbol(), EnvResult(ExpressionType, exp)); 

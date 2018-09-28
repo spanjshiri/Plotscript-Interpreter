@@ -43,6 +43,12 @@ public:
    * definitions. */
   Environment();
 
+  // construct an environment with a copy constructor
+  Environment(const Environment & a);
+
+  //consturct an environment with an assignment operator
+  Environment & operator=(const Environment & a);
+
   /*! Determine if a symbol is known to the environment.
     \param sym the sumbol to lookup
     \return true if the symbol has been defined in the environment
@@ -85,6 +91,8 @@ public:
 
   /*! Reset the environment to its default state. */
   void reset();
+
+  void findProc(const std::string & str, Environment & env);
 
 private:
   

@@ -102,6 +102,10 @@ bool Atom::isList() const noexcept {
 	return m_type == ListKind;
 }
 
+bool Atom::isLambda() const noexcept {
+	return m_type == LambdaKind;
+}
+
 void Atom::setNumber(double value){
 
   m_type = NumberKind;
@@ -128,6 +132,10 @@ void Atom::setComplex(const std::complex<double> value){
 
 void Atom::setList() {
 	m_type = ListKind;
+}
+
+void Atom::setLambda() {
+	m_type = LambdaKind;
 }
 
 double Atom::asNumber() const noexcept{

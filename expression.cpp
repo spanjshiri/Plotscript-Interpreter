@@ -2,7 +2,7 @@
 
 #include <sstream>
 #include <list>
-
+#include <iostream>
 #include "environment.hpp"
 #include "semantic_error.hpp"
 
@@ -26,6 +26,13 @@ Expression::Expression(const std::vector<Expression> & list) {
 	m_head.setList();
 	m_tail = list;
 }
+
+/*Expression::Expression(const std::vector<Expression> & args, const Atom & a) {
+	m_head = a;
+	for (auto e : args) {
+		m_tail.push_back(e);
+	}
+}*/
 
 Expression & Expression::operator=(const Expression & a){
 
@@ -91,7 +98,21 @@ Expression::ConstIteratorType Expression::tailConstEnd() const noexcept{
 }
 
 Expression apply(const Atom & op, const std::vector<Expression> & args, const Environment & env){
-
+  // need to create a new environment to use for the 1st one
+	if (env.is_exp(op)) {
+		int index = 0;
+		Environment newEnv = env;
+		Expression newExp = newEnv.get_exp(op);
+		Expression newArgs = *newExp.tailConstBegin();
+		std::vector<Expression> vec = {  };
+		for (auto e = (newArgs.tailConstBegin()); e != newArgs.tailConstEnd(); e++) {
+			std::string str = (*e).head().asSymbol();
+			newEnv.findProc(str, newEnv);
+			newEnv.add_exp(Atom(str), args[index]);
+			index++;
+		}
+		return (newExp.tail()->eval(newEnv));
+	}
   // head must be a symbol
   if(!op.isSymbol()){
     throw SemanticError("Error during evaluation: procedure name not symbol");
@@ -101,7 +122,7 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
   if(!env.is_proc(op)){
     throw SemanticError("Error during evaluation: symbol does not name a procedure");
   }
-  
+
   // map from symbol to proc
   Procedure proc = env.get_proc(op);
   
@@ -124,9 +145,6 @@ Expression Expression::handle_lookup(const Atom & head, const Environment & env)
     else if(head.isNumber()){
       return Expression(head);
     }
-	/*else if (head.asSymbol() == "list") {
-		return Expression(m_tail);
-	}*/
     else{
       throw SemanticError("Error during evaluation: Invalid type in terminal expression");
     }
@@ -183,6 +201,42 @@ Expression Expression::handle_define(Environment & env){
   return result;
 }
 
+Expression Expression::handle_lambda(Environment & env) {
+	// tail must have size 3 or error
+	if (m_tail.size() != 2) {
+		throw SemanticError("Error during evaluation: invalid number of arguments to define");
+	}
+
+	// tail[0] must be symbol
+	if (!m_tail[0].isHeadSymbol() && !m_tail[1].isHeadSymbol()) {
+		throw SemanticError("Error during evaluation: first argument to define not symbol");
+	}
+
+	// but tail[0] must not be a special-form or procedure
+	std::string s = m_tail[0].head().asSymbol();
+
+	if (env.is_proc(m_head) || env.is_proc(m_tail[0].head().asSymbol())) {
+		throw SemanticError("Error during evaluation: attempt to redefine a built-in procedure");
+	}
+
+	if (env.is_exp(m_head)) {
+		throw SemanticError("Error during evaluation: attempt to redefine a previously defined symbol");
+	}
+
+	//and add to env
+	std::vector<Expression> temp = {  };
+	std::vector<Expression> result = {  };
+	temp.push_back(Expression(m_tail[0].head()));
+	for (auto e = (m_tail[0].tailConstBegin()); e != m_tail[0].tailConstEnd(); e++) {
+		temp.push_back(Expression(*e));
+	}
+	result.push_back(temp);
+	result.push_back(m_tail[1]);
+	Expression new_result = Expression(result);
+	new_result.head().setLambda();
+	return new_result;
+}
+
 // this is a simple recursive version. the iterative version is more
 // difficult with the ast data structure used (no parent pointer).
 // this limits the practical depth of our AST
@@ -192,6 +246,10 @@ Expression Expression::eval(Environment & env){
 		  return Expression(m_tail);
 	}
     return handle_lookup(m_head, env);
+  }
+  // handle labda special-form
+  if (m_head.isSymbol() && m_head.asSymbol() == "lambda") {
+	  return handle_lambda(env);
   }
   // handle begin special-form
   else if(m_head.isSymbol() && m_head.asSymbol() == "begin"){
@@ -213,8 +271,13 @@ Expression Expression::eval(Environment & env){
 
 
 std::ostream & operator<<(std::ostream & out, const Expression & exp){
+  Environment env;
   if(!exp.isHeadComplex()) out << "(";
   out << exp.head();
+
+  if (exp.isHeadSymbol() && env.is_proc(exp.head())) {
+	  out << " ";
+  }
 
   for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
 	  auto it = e + 1;
