@@ -64,7 +64,7 @@ TokenSequenceType tokenize(std::istream & seq){
     }
 	else if (c == QUOTECHAR) {
 		token.push_back(c);
-		for (c = seq.get(); c != '"' ; c = seq.get()) {
+		for (c = seq.get(); c != '"' && !seq.eof() ; c = seq.get()) {
 			token.push_back(c);
 		}
 		token.push_back(c);
