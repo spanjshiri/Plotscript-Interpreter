@@ -75,6 +75,10 @@ bool Expression::isHeadList() const noexcept {
   return m_head.isList();
 }
 
+bool Expression::isHeadString() const noexcept {
+	return m_head.isString();
+}
+
 
 void Expression::append(const Atom & a){
   m_tail.emplace_back(a);
@@ -227,6 +231,9 @@ Expression Expression::handle_lookup(const Atom & head, const Environment & env)
     else if(head.isNumber()){
       return Expression(head);
     }
+	else if (head.isString()) {
+      return Expression(head);
+	}
     else{
       throw SemanticError("Error during evaluation: Invalid type in terminal expression");
     }
@@ -329,7 +336,7 @@ Expression Expression::eval(Environment & env){
 	}
     return handle_lookup(m_head, env);
   }
-  // handle labda special-form
+  // handle lambda special-form
   if (m_head.isSymbol() && m_head.asSymbol() == "lambda") {
 	  return handle_lambda(env);
   }

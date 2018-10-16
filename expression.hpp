@@ -74,6 +74,9 @@ public:
   /// convenience member to determine if head atom is a list
   bool isHeadList() const noexcept;
 
+  /// convenience member to determine if head atom is a string
+  bool isHeadString() const noexcept;
+
   /// Evaluate expression using a post-order traversal (recursive)
   Expression eval(Environment & env);
 
