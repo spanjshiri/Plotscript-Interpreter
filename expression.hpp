@@ -4,6 +4,8 @@ Defines the Expression type and assiciated functions.
 #ifndef EXPRESSION_HPP
 #define EXPRESSION_HPP
 
+// system includes
+#include <map>
 #include <string>
 #include <vector>
 
@@ -99,6 +101,8 @@ private:
   typedef std::vector<Expression>::iterator ListType;
   
   // internal helper methods
+  Expression set_property(Environment & env);
+  Expression get_property(Environment & env);
   Expression handle_lookup(const Atom & head, const Environment & env);
   Expression handle_define(Environment & env);
   Expression handle_begin(Environment & env);
@@ -106,6 +110,7 @@ private:
   Expression handle_apply(Environment & env);
   Expression handle_map(Environment & env);
 
+  std::map<std::string, Expression> propertymap;
 };
 
 /// Render expression to output stream

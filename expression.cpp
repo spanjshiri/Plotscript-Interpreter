@@ -14,8 +14,8 @@ Expression::Expression(const Atom & a){
 
 // recursive copy
 Expression::Expression(const Expression & a){
-
   m_head = a.m_head;
+  propertymap = a.propertymap;
   for(auto e : a.m_tail){
     m_tail.push_back(e);
   }
@@ -41,6 +41,7 @@ Expression & Expression::operator=(const Expression & a){
   // prevent self-assignment
   if(this != &a){
     m_head = a.m_head;
+    propertymap = a.propertymap;
     m_tail.clear();
     for(auto e : a.m_tail){
       m_tail.push_back(e);
@@ -178,6 +179,40 @@ Expression Expression::handle_apply(Environment & env) {
 	
 }
 
+// Adds a property functionality
+Expression Expression::set_property(Environment & env){
+// tail[0] must be string
+  std::string key = m_tail[0].head().asString();
+  Expression value = m_tail[1].eval(env);
+  Expression exp = m_tail[2].eval(env);
+  if(!m_tail[0].isHeadString()){
+    throw SemanticError("Error during evaluation: first argument to property not a string");
+  }
+  if(m_tail.size() != 3){
+    throw SemanticError("Error during evaluation: invalid number of arguments to property");
+  }
+  //m_tail[2].eval(env).propertymap[m_tail[0].head().asString()] = m_tail[1].eval(env);
+  exp.propertymap[key] = value;
+  return exp;
+  //return m_tail[2].eval(env);
+}
+
+// Adds a property functionality
+Expression Expression::get_property(Environment & env){
+  std::string key = m_tail[0].head().asString();
+  Expression exp = m_tail[1].eval(env);
+  if(!m_tail[0].isHeadString()){
+    throw SemanticError("Error during evaluation: first argument to property not a string");
+  }
+  if(m_tail.size() != 2){
+    throw SemanticError("Error during evaluation: invalid number of arguments to property");
+  }
+  return exp.propertymap[key];
+  // if(m_tail[0] == Expression()){
+  //   return Expression(none);
+  // }
+}
+
 // Adds map functionality for a list
 Expression Expression::handle_map(Environment & env) {
 	std::vector<Expression> vec = {};
@@ -269,7 +304,7 @@ Expression Expression::handle_define(Environment & env){
 
   // but tail[0] must not be a special-form or procedure
   std::string s = m_tail[0].head().asSymbol();
-  if((s == "define") || (s == "begin")){
+  if((s == "define") || (s == "begin") || (s == "e") || (s == "pi") || (s == "I")){
     throw SemanticError("Error during evaluation: attempt to redefine a special-form");
   }
   
@@ -280,9 +315,9 @@ Expression Expression::handle_define(Environment & env){
   // eval tail[1]
   Expression result = m_tail[1].eval(env);
 
-  if(env.is_exp(m_head)){
-    throw SemanticError("Error during evaluation: attempt to redefine a previously defined symbol");
-  }
+  //if(env.is_exp(m_head)){
+  //  throw SemanticError("Error during evaluation: attempt to redefine a previously defined symbol");
+  //}
     
   //and add to env
   env.add_exp(m_tail[0].head(), result);
@@ -360,6 +395,14 @@ Expression Expression::eval(Environment & env){
   else if(m_head.isSymbol() && m_head.asSymbol() == "define"){
     return handle_define(env);
   }
+  // handle set_property special-form
+  else if(m_head.isSymbol() && m_head.asSymbol() == "set-property"){
+    return set_property(env);
+  }
+  // handle get_property special-form
+  else if(m_head.isSymbol() && m_head.asSymbol() == "get-property"){
+    return get_property(env);
+  }
   // else attempt to treat as procedure
   else{ 
     std::vector<Expression> results;
@@ -373,25 +416,30 @@ Expression Expression::eval(Environment & env){
 
 std::ostream & operator<<(std::ostream & out, const Expression & exp){
   Environment env;
-  if(!exp.isHeadComplex()) out << "(";
-  out << exp.head();
-
-  if (exp.isHeadSymbol() && env.is_proc(exp.head())) {
-	  out << " ";
+  if(!exp.isHeadList() && exp.head().isNone()){
+    out << "NONE";
   }
+  else{
+      if(!exp.isHeadComplex()) out << "(";
+    out << exp.head();
 
-  for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
-	  auto it = e + 1;
-	  if (it == exp.tailConstEnd()) {
-		  out << *e;
-	  }
-	  else {
-		  out << *e << " ";
-	  }
-  }
+    if (exp.isHeadSymbol() && env.is_proc(exp.head())) {
+      out << " ";
+    }
 
-  if (!exp.isHeadComplex()) {
+    for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
+      auto it = e + 1;
+      if (it == exp.tailConstEnd()) {
+        out << *e;
+      }
+      else {
+        out << *e << " ";
+      }
+    }
+
+    if (!exp.isHeadComplex()) {
 	  out << ")";
+    }
   }
   return out;
 }
