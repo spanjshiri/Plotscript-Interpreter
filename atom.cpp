@@ -26,14 +26,23 @@ Atom::Atom(const Token & token): Atom(){
   else{ // else assume symbol
     // make sure does not start with number
     if(!std::isdigit(token.asString()[0])){
-      setSymbol(token.asString());
+		if (token.asString()[0] == '"') {
+			setString(token.asString());
+		}
+		else {
+			setSymbol(token.asString());
+		}
     }
   }
 }
 
 Atom::Atom(const std::string & value): Atom() {
-  
-  setSymbol(value);
+	if (value[0] == '"') {
+		setString(value);
+  }
+	else {
+		setSymbol(value);
+	}
 }
 
 Atom::Atom(std::complex<double> value) {
@@ -49,6 +58,9 @@ Atom::Atom(const Atom & x): Atom(){
   }
   else if(x.isComplex()){
     setComplex(x.complexValue);
+  }
+  else if (x.isSymbol()) {
+	setSymbol(x.stringValue);
   }
 }
 
@@ -70,6 +82,9 @@ Atom & Atom::operator=(const Atom & x){
 	else if (x.m_type == ListKind) {
 		setList();
 	}
+	else if (x.m_type == StringKind) {
+		setString(x.stringValue);
+	}
   }
   return *this;
 }
@@ -77,7 +92,7 @@ Atom & Atom::operator=(const Atom & x){
 Atom::~Atom(){
 
   // we need to ensure the destructor of the symbol string is called
-  if(m_type == SymbolKind){
+  if(m_type == SymbolKind || m_type == StringKind){
     stringValue.~basic_string();
   }
 }
@@ -102,9 +117,10 @@ bool Atom::isList() const noexcept {
 	return m_type == ListKind;
 }
 
-/*bool Atom::isLambda() const noexcept {
-	return m_type == LambdaKind;
-}*/
+bool Atom::isString() const noexcept {
+	return m_type == StringKind;
+}
+
 
 void Atom::setNumber(double value){
 
@@ -138,6 +154,18 @@ void Atom::setLambda() {
 	m_type = LambdaKind;
 }
 
+void Atom::setString(const std::string & value) {
+	// we need to ensure the destructor of the symbol string is called
+	if (m_type == StringKind) {
+		stringValue.~basic_string();
+	}
+
+	m_type = StringKind;
+
+	// copy construct in place
+	new (&stringValue) std::string(value);
+}
+
 double Atom::asNumber() const noexcept{
   // Convert a complex to a number if the current type is complex
   if(m_type == ComplexKind){
@@ -157,6 +185,16 @@ std::string Atom::asSymbol() const noexcept{
   }
 
   return result;
+}
+
+std::string Atom::asString() const noexcept {
+	std::string result;
+
+	if (m_type == StringKind) {
+		result = stringValue;
+	}
+
+	return result;
 }
 
 std::complex<double> Atom::asComplex() const noexcept{
@@ -208,6 +246,13 @@ bool Atom::operator==(const Atom & right) const noexcept{
 	  if (right.m_type != ListKind) return false;
   }
   break;
+  case StringKind:
+  {
+	  if (right.m_type != StringKind) return false;
+
+	  return stringValue == right.stringValue;
+  }
+  break;
   default:
     return false;
   }
@@ -231,6 +276,9 @@ std::ostream & operator<<(std::ostream & out, const Atom & a){
   }
   if(a.isComplex()){
     out << a.asComplex();
+  }
+  if (a.isString()) {
+	out << a.asString();
   }
   return out;
 }

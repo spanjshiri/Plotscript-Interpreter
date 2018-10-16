@@ -57,11 +57,17 @@ public:
   /// predicate to determine if an Atom is of type Lambda
   bool isLambda() const noexcept;
 
+  /// predicate to determine if an Atom is of type String
+  bool isString() const noexcept;
+
   /// value of Atom as a number, return 0 if not a Number
   double asNumber() const noexcept;
 
   /// value of Atom as a number, returns empty-string if not a Symbol
   std::string asSymbol() const noexcept;
+
+  /// value of Atom as a String
+  std::string asString() const noexcept;
 
   /// value of Atom as a complex, return (0,0) if not a Complex
   std::complex<double> asComplex() const noexcept;
@@ -73,10 +79,13 @@ public:
 
   void setLambda();
 
+  // helper to set the type and value of a string
+  void setString(const std::string & value);
+
 private:
 
   // internal enum of known types
-  enum Type {NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind, LambdaKind};
+  enum Type {NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind, LambdaKind, StringKind};
 
   // track the type
   Type m_type;
