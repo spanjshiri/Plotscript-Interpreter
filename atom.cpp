@@ -59,8 +59,8 @@ Atom::Atom(const Atom & x): Atom(){
   else if(x.isComplex()){
     setComplex(x.complexValue);
   }
-  else if (x.isSymbol()) {
-	setSymbol(x.stringValue);
+  else if (x.isString()) {
+	setString(x.stringValue);
   }
 }
 
