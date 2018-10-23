@@ -32,13 +32,14 @@ void OutputWidget::recieveText(QString str){
     else{
         try{
             Expression exp = interp.evaluate();
-            if(exp.isHeadList()){
-                shouldClear = false;
-            }
-            if(shouldClear == true){
-                recieveText(str);
-                scene->clear();
-            }
+            // if(exp.isHeadList()){
+            //     shouldClear = false;
+            // }
+            // if(shouldClear == true){
+            //     recieveText(str);
+            //     scene->clear();
+            // }
+            scene->clear();
             scene->addText(QString::fromStdString(exp.makeString()));
         }
         catch(const SemanticError & ex){
