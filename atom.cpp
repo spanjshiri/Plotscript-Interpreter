@@ -189,11 +189,18 @@ std::string Atom::asSymbol() const noexcept{
 
 std::string Atom::asString() const noexcept {
 	std::string result;
+  std::ostringstream oss;
 
 	if (m_type == StringKind) {
-		result = stringValue;
+		oss << stringValue;
 	}
-
+  else if(m_type == NumberKind){
+    oss << numberValue;
+  }
+  else if(m_type == ComplexKind){
+    oss << complexValue;
+  }
+  result = oss.str();
 	return result;
 }
 
