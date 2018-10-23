@@ -3,6 +3,10 @@
 
 #include <QWidget>
 #include <QLayout>
+#include <QPlainTextEdit>
+#include <QDebug>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include "input_widget.hpp"
 #include "output_widget.hpp"
 
@@ -11,11 +15,6 @@ Q_OBJECT
 
 public:
     NotebookApp(QWidget * parent = nullptr);
-
-signals:
-    void recieveText(QString str);
-
-private slots:
 
 private:
     OutputWidget output;

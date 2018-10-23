@@ -84,6 +84,8 @@ public:
 
   /// equality comparison for two expressions (recursive)
   bool operator==(const Expression & exp) const noexcept;
+
+  std::string makeString() const noexcept;
   
 private:
 

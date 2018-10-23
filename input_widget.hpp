@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QPlainTextEdit>
 #include <QSet>
+#include <QLayout>
+#include <QDebug>
 
 class InputWidget: public QPlainTextEdit{
 Q_OBJECT

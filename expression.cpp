@@ -465,3 +465,33 @@ bool operator!=(const Expression & left, const Expression & right) noexcept{
 
   return !(left == right);
 }
+
+std::string Expression::makeString() const noexcept{
+    Environment env;
+    std::string newString;
+    if(!this->isHeadList() && this->head().isNone()){
+        newString+="NONE";
+    }
+    else{
+      if(!this->isHeadComplex() && !this->isHeadList()){
+          newString+="(";
+      }
+    newString+=this->head().asString();
+
+    // if (this->isHeadSymbol() && env.is_proc(this->head())) {
+    //   newString+=" ";
+    // }
+
+    for(auto e = this->tailConstBegin(); e != this->tailConstEnd(); ++e){
+      auto it = e + 1;
+      if (it == this->tailConstEnd()) {
+        newString+=(*e).makeString();
+      }
+    }
+
+    if (!this->isHeadComplex() && !this->isHeadList()) {
+	  newString+=")";
+    }
+  }
+  return newString;
+}
