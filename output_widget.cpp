@@ -43,13 +43,13 @@ void OutputWidget::recieveText(QString str){
             scene->clear();
             if(exp.isHeadList()){
                 for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
-                    std::cout << "Output: " << (*e).head().asString() << std::endl;
+                    //std::cout << "Output: " << (*e).head().asString() << std::endl;
                     scene->addText(QString::fromStdString((*e).makeString()));
                 }
                 return;
             }
-            if(exp.head().isLambda()){
-                scene->addText(QString::fromStdString(""));
+            else if(exp.head().isLambda()){
+                //scene->addText(QString::fromStdString(""));
                 return;
             }
             scene->addText(QString::fromStdString(exp.makeString()));
