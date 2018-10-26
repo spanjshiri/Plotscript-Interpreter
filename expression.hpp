@@ -86,6 +86,12 @@ public:
   bool operator==(const Expression & exp) const noexcept;
 
   std::string makeString() const noexcept;
+
+  std::vector<Expression> makeTail() const noexcept;
+
+  bool isPoint() const noexcept;
+
+  bool isLine() const noexcept;
   
 private:
 

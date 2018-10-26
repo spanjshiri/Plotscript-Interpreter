@@ -32,14 +32,26 @@ void OutputWidget::recieveText(QString str){
     else{
         try{
             Expression exp = interp.evaluate();
-            // if(exp.isHeadList()){
-            //     shouldClear = false;
+            //Environment env;
+            //qDebug() << str;
+            // else if(!exp.isHeadList()){
+            //     shouldClear = true;
             // }
             // if(shouldClear == true){
-            //     recieveText(str);
             //     scene->clear();
             // }
             scene->clear();
+            if(exp.isHeadList()){
+                for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
+                    std::cout << "Output: " << (*e).head().asString() << std::endl;
+                    scene->addText(QString::fromStdString((*e).makeString()));
+                }
+                return;
+            }
+            if(exp.head().isLambda()){
+                scene->addText(QString::fromStdString(""));
+                return;
+            }
             scene->addText(QString::fromStdString(exp.makeString()));
         }
         catch(const SemanticError & ex){

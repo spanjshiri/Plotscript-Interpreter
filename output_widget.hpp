@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QLayout>
+#include <QDebug>
 #include <QGraphicsTextItem>
 #include <string>
 #include <sstream>

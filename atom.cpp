@@ -82,6 +82,9 @@ Atom & Atom::operator=(const Atom & x){
 	else if (x.m_type == ListKind) {
 		setList();
 	}
+  else if (x.m_type == LambdaKind){
+    setLambda();
+  }
 	else if (x.m_type == StringKind) {
 		setString(x.stringValue);
 	}
@@ -119,6 +122,10 @@ bool Atom::isList() const noexcept {
 
 bool Atom::isString() const noexcept {
 	return m_type == StringKind;
+}
+
+bool Atom::isLambda() const noexcept {
+  return m_type == LambdaKind;
 }
 
 

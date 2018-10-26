@@ -469,6 +469,8 @@ bool operator!=(const Expression & left, const Expression & right) noexcept{
 std::string Expression::makeString() const noexcept{
     Environment env;
     std::string newString;
+    // static bool listStartChecked = false;
+    // static bool listEndChecked = false;
     if(!this->isHeadList() && this->head().isNone()){
         newString+="NONE";
     }
@@ -476,22 +478,42 @@ std::string Expression::makeString() const noexcept{
       if(!this->isHeadComplex() && !this->isHeadList()){
           newString+="(";
       }
-    newString+=this->head().asString();
+      newString+=this->head().asString();
 
-    // if (this->isHeadSymbol() && env.is_proc(this->head())) {
-    //   newString+=" ";
-    // }
-
-    for(auto e = this->tailConstBegin(); e != this->tailConstEnd(); ++e){
-      auto it = e + 1;
-      if (it == this->tailConstEnd()) {
+      for(auto e = this->tailConstBegin(); e != this->tailConstEnd(); ++e){
         newString+=(*e).makeString();
       }
-    }
 
-    if (!this->isHeadComplex() && !this->isHeadList()) {
-	  newString+=")";
-    }
+      if (!this->isHeadComplex() && !this->isHeadList()) {
+      newString+=")";
+      }
+
+      /*if (this->head().asSymbol() == "lambda") {
+        return "";
+      }*/
   }
+  //std::cout << newString << std::endl;
   return newString;
 }
+
+std::vector<Expression> Expression::makeTail() const noexcept{
+  std::vector<Expression> vec;
+  for(auto e = this->tailConstBegin(); e != this->tailConstEnd(); ++e){
+    vec.push_back(*e);
+  }
+  return vec;
+}
+
+// bool Expression::isPoint() const noexcept{
+//   if(propertymap["\"object-name\""].head().asString() == "\"point\""){
+//     return true;
+//   }
+//   return false;
+// }
+
+// bool Expression::isLine() const noexcept{
+//   if(propertymap["\"object-name\""].head().asString() == "\"line\""){
+//     return true;
+//   }
+//   return false;
+// }
