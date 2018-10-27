@@ -510,14 +510,6 @@ bool Expression::isPoint() {
   return point;
 }
 
-double Expression::getSize() {
-  return propertymap["\"size\""].head().asNumber();
-}
-
-double Expression::getThickness() {
-  return propertymap["\"thickness\""].head().asNumber();
-}
-
 bool Expression::isLine() {
   bool line = false;
   if(propertymap["\"object-name\""].head().asString() == "\"line\""){
@@ -532,6 +524,18 @@ bool Expression::isText() {
     text = true;
   }
   return text;
+}
+
+double Expression::getSize() {
+  return propertymap["\"size\""].head().asNumber();
+}
+
+double Expression::getThickness() {
+  return propertymap["\"thickness\""].head().asNumber();
+}
+
+Expression Expression::getPosition() {
+  return propertymap["\"position\""];
 }
 
 

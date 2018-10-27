@@ -98,6 +98,8 @@ public:
   double getSize();
 
   double getThickness();
+
+  Expression getPosition();
   
 private:
 

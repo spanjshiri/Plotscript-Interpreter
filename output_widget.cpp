@@ -66,7 +66,16 @@ void OutputWidget::recieveText(QString str){
                     scene->QGraphicsScene::addLine(x1,y1,x2,y2,pen);
                 }
                 else if(exp.isText()){
-                    QGraphicsTextItem::setPos();
+                    std::vector<Expression> tail = exp.makeTail();
+                    Expression newExp = exp.getPosition();
+                    std::vector<Expression> tail2 = newExp.makeTail();
+                    double x = tail2[0].head().asNumber();
+                    double y = tail2[1].head().asNumber();
+                    qDebug() << "X: " << x;
+                    qDebug() << "Y: " << y;
+                    std::string text = tail[0].head().asString();
+                    QGraphicsTextItem *str = scene->addText(QString::fromStdString(text));
+                    str->setPos(x, y);
                 }
                 else{
                     for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e){
