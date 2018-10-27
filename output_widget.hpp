@@ -23,13 +23,14 @@ Q_OBJECT
 
 public:
     OutputWidget(QWidget * parent = nullptr);
-    //std::string makeString(Expression exp);
+    void printList(Expression exp);
     
 private slots:
     void recieveText(QString str);
 
 private:
-bool shouldClear = true;
+bool shouldClear = false;
+bool listPrinted = false;
 QGraphicsScene * scene;
 QGraphicsView * view;
 Interpreter interp;

@@ -502,40 +502,51 @@ std::vector<Expression> Expression::makeTail() const noexcept{
   return vec;
 }
 
-bool Expression::isPoint() {
+bool Expression::isPoint() const noexcept{
   bool point = false;
-  if(propertymap["\"object-name\""].head().asString() == "\"point\""){
-    point = true;
+  std::cout << "Inside isPoint Before" << std::endl;
+  Expression pointExp(Atom("\"point\""));
+  if(propertymap.find("\"object-name\"") != propertymap.end()){
+    std::cout << "Inside isPoint Before" << std::endl;
+    if(propertymap.at("\"object-name\"") == pointExp){
+      point = true;
+    }
   }
   return point;
 }
 
-bool Expression::isLine() {
+bool Expression::isLine() const noexcept{
   bool line = false;
-  if(propertymap["\"object-name\""].head().asString() == "\"line\""){
-    line = true;
+  Expression lineExp(Atom("\"line\""));
+  if(propertymap.find("\"object-name\"") != propertymap.end()){
+    if(propertymap.at("\"object-name\"") == lineExp){
+      line = true;
+    }
   }
   return line;
 }
 
-bool Expression::isText() {
+bool Expression::isText() const noexcept{
   bool text = false;
-  if(propertymap["\"object-name\""].head().asString() == "\"text\""){
-    text = true;
+  Expression textExp(Atom("\"text\""));
+  if(propertymap.find("\"object-name\"") != propertymap.end()){
+    if(propertymap.at("\"object-name\"") == textExp){
+      text = true;
+    }
   }
   return text;
 }
 
-double Expression::getSize() {
-  return propertymap["\"size\""].head().asNumber();
+double Expression::getSize() const noexcept{
+  return propertymap.at("\"size\"").head().asNumber();
 }
 
-double Expression::getThickness() {
-  return propertymap["\"thickness\""].head().asNumber();
+double Expression::getThickness() const noexcept{
+  return propertymap.at("\"thickness\"").head().asNumber();
 }
 
-Expression Expression::getPosition() {
-  return propertymap["\"position\""];
+Expression Expression::getPosition() const noexcept{
+  return propertymap.at("\"position\"");
 }
 
 
