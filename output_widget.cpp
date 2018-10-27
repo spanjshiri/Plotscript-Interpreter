@@ -33,6 +33,20 @@ void OutputWidget::recieveText(QString str){
         try{
             Expression exp = interp.evaluate();
             scene->clear();
+            if(exp.isText()){
+                //qDebug() << "Inside stupid text";
+                std::vector<Expression> tail = exp.makeTail();
+                Expression newExp = exp.getPosition();
+                std::vector<Expression> tail2 = newExp.makeTail();
+                double x = tail2[0].head().asNumber();
+                double y = tail2[1].head().asNumber();
+                std::string text = exp.head().asString();
+                std::string subText = text.substr(1,text.length()-2);
+                QGraphicsTextItem *str = scene->addText(QString::fromStdString(subText));
+                str->setPos(x, y);
+                singleTextPrinted = true;
+                return;
+            }
             if(exp.isHeadList()){
                 printList(exp);
             }
@@ -74,17 +88,6 @@ void OutputWidget::printList(Expression exp){
         pen.setWidth(thickness);
         scene->QGraphicsScene::addLine(x1,y1,x2,y2,pen);
     }
-    else if(exp.isText()){
-                std::vector<Expression> tail = exp.makeTail();
-                Expression newExp = exp.getPosition();
-                std::vector<Expression> tail2 = newExp.makeTail();
-                double x = tail2[0].head().asNumber();
-                double y = tail2[1].head().asNumber();
-                std::string text = exp.head().asString();
-                std::string subText = text.substr(1,text.length()-2);
-                QGraphicsTextItem *str = scene->addText(QString::fromStdString(subText));
-                str->setPos(x, y);
-            }
     else{
         for(auto e = exp.tailConstBegin(); e != exp.tailConstEnd(); ++e) {
             if((*e).isPoint()){
@@ -110,10 +113,7 @@ void OutputWidget::printList(Expression exp){
                 pen.setWidth(thickness);
                 scene->QGraphicsScene::addLine(x1,y1,x2,y2,pen);
             }
-            else{
-                scene->addText(QString::fromStdString((*e).makeString()));
-            }
-            if((*e).isText()){
+            else if((*e).isText() && !singleTextPrinted){
                 std::vector<Expression> tail = (*e).makeTail();
                 Expression newExp = (*e).getPosition();
                 std::vector<Expression> tail2 = newExp.makeTail();
@@ -123,6 +123,9 @@ void OutputWidget::printList(Expression exp){
                 std::string subText = text.substr(1,text.length()-2);
                 QGraphicsTextItem *str = scene->addText(QString::fromStdString(subText));
                 str->setPos(x, y);
+            }
+            else{
+                scene->addText(QString::fromStdString((*e).makeString()));
             }
         }
     }

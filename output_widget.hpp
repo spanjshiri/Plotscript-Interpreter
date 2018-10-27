@@ -30,7 +30,7 @@ private slots:
 
 private:
 bool shouldClear = false;
-bool listPrinted = false;
+bool singleTextPrinted = false;
 QGraphicsScene * scene;
 QGraphicsView * view;
 Interpreter interp;
