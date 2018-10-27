@@ -488,9 +488,6 @@ std::string Expression::makeString() const noexcept{
       newString+=")";
       }
 
-      /*if (this->head().asSymbol() == "lambda") {
-        return "";
-      }*/
   }
   //std::cout << newString << std::endl;
   return newString;
@@ -499,21 +496,42 @@ std::string Expression::makeString() const noexcept{
 std::vector<Expression> Expression::makeTail() const noexcept{
   std::vector<Expression> vec;
   for(auto e = this->tailConstBegin(); e != this->tailConstEnd(); ++e){
+    // std::cout << (*e).head().asString() << std::endl;
     vec.push_back(*e);
   }
   return vec;
 }
 
-// bool Expression::isPoint() const noexcept{
-//   if(propertymap["\"object-name\""].head().asString() == "\"point\""){
-//     return true;
-//   }
-//   return false;
-// }
+bool Expression::isPoint() {
+  bool point = false;
+  if(propertymap["\"object-name\""].head().asString() == "\"point\""){
+    point = true;
+  }
+  return point;
+}
 
-// bool Expression::isLine() const noexcept{
-//   if(propertymap["\"object-name\""].head().asString() == "\"line\""){
-//     return true;
-//   }
-//   return false;
-// }
+double Expression::getSize() {
+  return propertymap["\"size\""].head().asNumber();
+}
+
+double Expression::getThickness() {
+  return propertymap["\"thickness\""].head().asNumber();
+}
+
+bool Expression::isLine() {
+  bool line = false;
+  if(propertymap["\"object-name\""].head().asString() == "\"line\""){
+    line = true;
+  }
+  return line;
+}
+
+bool Expression::isText() {
+  bool text = false;
+  if(propertymap["\"object-name\""].head().asString() == "\"text\""){
+    text = true;
+  }
+  return text;
+}
+
+

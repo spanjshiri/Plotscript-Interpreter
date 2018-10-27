@@ -89,9 +89,15 @@ public:
 
   std::vector<Expression> makeTail() const noexcept;
 
-  bool isPoint() const noexcept;
+  bool isPoint();
 
-  bool isLine() const noexcept;
+  bool isLine();
+  
+  bool isText();
+
+  double getSize();
+
+  double getThickness();
   
 private:
 

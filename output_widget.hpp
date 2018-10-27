@@ -7,6 +7,7 @@
 #include <QLayout>
 #include <QDebug>
 #include <QGraphicsTextItem>
+#include <QGraphicsEllipseItem>
 #include <string>
 #include <sstream>
 #include <iostream>
