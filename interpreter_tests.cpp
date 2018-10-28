@@ -216,6 +216,17 @@ TEST_CASE("Test Interpreter parser for set property error #2", "[interpreter]"){
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
+TEST_CASE("Test Interpreter parser for first argument to define not a symbol", "[interpreter]"){
+  INFO("Should return invalid first argument to define")
+	std::string program = "(define 4 3)";
+	std::istringstream iss(program);
+	Interpreter interp;
+
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
 TEST_CASE("Test Interpreter parser for symbol does not name a procedure", "[interpreter]") {
 
 	INFO("Should return error: symbol does not name a procedure")
