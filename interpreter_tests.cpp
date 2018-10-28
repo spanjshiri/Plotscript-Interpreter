@@ -151,6 +151,14 @@ TEST_CASE("Test Interpreter parser to map should return invalid arguments in app
 	REQUIRE_THROWS_AS(interp1.evaluate(), SemanticError);
 }
 
+/*TEST_CASE("Test Interpreter parser for set property"){
+  INFO("Should return invalid number of arguments in set property")
+	std::string program = "(begin (define a (+ 1 I)) (define b (set-property "note" "a complex number" a)))";
+	std::istringstream iss(program);
+	Interpreter interp;
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}*/
+
 TEST_CASE( "Test Interpreter parser with numerical literals", "[interpreter]" ) {
 
   std::vector<std::string> programs = {"(1)", "(+1)", "(+1e+0)", "(1e-0)"};

@@ -10,7 +10,7 @@ bool InputWidget::eventFilter(QObject *object, QEvent *event)
     static QSet<int> pressedKeys;
 
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         pressedKeys += ((QKeyEvent*)event)->key();
         if(pressedKeys.contains(Qt::Key_Shift) && pressedKeys.contains(Qt::Key_Return))
         {
