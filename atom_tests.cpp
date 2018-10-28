@@ -46,6 +46,7 @@ TEST_CASE( "Test constructors", "[atom]" ) {
     INFO("Copy Constructor");
     Atom a("hi");
     Atom b(1.0);
+    Atom e(std::complex<double> (0.0,0.0));
     
     Atom c = a;
     REQUIRE(!a.isNone());
@@ -55,7 +56,13 @@ TEST_CASE( "Test constructors", "[atom]" ) {
     Atom d = b;
     REQUIRE(!a.isNone());
     REQUIRE(d.isNumber());
+    REQUIRE(!b.isComplex());
+    REQUIRE(!b.isString());
     REQUIRE(!d.isSymbol());
+
+    Atom f = e;
+    REQUIRE(f.isComplex());
+
   }
 }
 
@@ -69,6 +76,9 @@ TEST_CASE( "Test assignment", "[atom]" ) {
     REQUIRE(b.isNone());
     REQUIRE(!b.isNumber());
     REQUIRE(!b.isSymbol());
+    REQUIRE(!b.isComplex());
+    REQUIRE(!b.isString());
+    REQUIRE(!b.isLambda());
   }
 
   {
