@@ -56,9 +56,11 @@ TEST_CASE("Test Interpreter parser with handle_lambda", "[interpreter]") {
 TEST_CASE("Test Interpreter parser to lambda should return invalid number of arguments", "[interpreter]") {
 
 	INFO("Testing apply with lambda")
-	std::string program = "(lambda (x) (+ x y))";
+	std::string program = "(lambda (x y) (+ x y) (+ x y))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
@@ -83,6 +85,8 @@ TEST_CASE("Test Interpreter parser to throw semantic error for apply", "[interpr
 	std::string program = "(begin (define linear (lambda (a b x) (+ (* a x) b))) (apply linear (3 4 5)))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
@@ -92,6 +96,8 @@ TEST_CASE("Test Interpreter parser to apply should return invalid number of argu
 	std::string program = "(apply / (list 1 2 4))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
@@ -100,6 +106,28 @@ TEST_CASE("Test Interpreter parser to apply should return first argument is not 
 	std::string program = "(apply (+ z I) (list 0))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser to lambda first argument to define not a symbol", "[interpreter]") {
+	INFO("Should return first argument to define not a symbol")
+	std::string program = "(lambda 1 1)";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser to lambda attempt to redefine a built in procedure", "[interpreter]") {
+	INFO("Should return attempt to redefine a built in procedure")
+	std::string program = "(lambda + 1)";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
@@ -127,6 +155,8 @@ TEST_CASE("Test Interpreter parser to map should return second argument to map n
 	std::string program = "(map + 3)";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
@@ -134,6 +164,8 @@ TEST_CASE("Test Interpreter parser to map should return first argument to map no
 	std::string program = "(map 3 (list 1 2 3))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
@@ -143,22 +175,133 @@ TEST_CASE("Test Interpreter parser to map should return invalid arguments in app
 		std::string program = "(begin (define addtwo (lambda (x y) (+ x y))) (map addtwo (list 1 2 3)))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+TEST_CASE("Test Interpreter parser to map to return if not a procedure", "[intercepter]"){
 	INFO("Should return error as it is not a procedure")
 		std::string program1 = "(begin (apply + 3))";
 	std::istringstream iss1(program1);
 	Interpreter interp1;
+  bool ok1 = interp1.parseStream(iss1);
+  REQUIRE(ok1 == true);
 	REQUIRE_THROWS_AS(interp1.evaluate(), SemanticError);
 }
 
-/*TEST_CASE("Test Interpreter parser for set property"){
+TEST_CASE("test Interpreter parser for set-property", "[interpreter]") {
+	std::string program = "(set-property \"number\" \"three\" (3))";
+	Expression value = run(program);
+	REQUIRE(value == Expression(3));
+}
+TEST_CASE("Test Interpreter parser for set property error #1", "[interpreter]"){
   INFO("Should return invalid number of arguments in set property")
-	std::string program = "(begin (define a (+ 1 I)) (define b (set-property "note" "a complex number" a)))";
+	std::string program = "(set-property \"note\" \"a complex number\" (+ 1 I) (+ 5))";
 	std::istringstream iss(program);
 	Interpreter interp;
+  
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
 	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser for set property error #2", "[interpreter]"){
+  INFO("Should return invalid first argument in set property")
+	std::string program = "(set-property note \"a complex number\" (+ 1 I))";
+	std::istringstream iss(program);
+	Interpreter interp;
+
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser for symbol does not name a procedure", "[interpreter]") {
+
+	INFO("Should return error: symbol does not name a procedure")
+	std::string program = "(cool 3 4)";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("test Interpreter parser for get-property", "[interpreter]") {
+	std::string program = "(begin (define a (+ 1 I)) (define b (set-property \"note\" \"a complex number\" a)) (get-property \"note\" b))";
+	Expression value = run(program);
+	REQUIRE(value == Expression(Atom("\"a complex number\"")));
+}
+
+TEST_CASE("Test Interpreter parser for get-property error #1", "[interpreter]") {
+	INFO("Should return error: first argument should be a string")
+	std::string program = "(begin (define a (+ 1 I)) (define b (set-property \"note\" \"a complex number\" a)) (get-property note b))";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("Test Interpreter parser for get-property error #2", "[interpreter]") {
+	INFO("Should return error: second argument must be in the property map")
+	std::string program = "(get-property \"note\" 3 3)";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+	REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("test Interpreter parser for makeString", "[interpreter]") {
+  std::string program = "(+ 1 2)";
+	Expression value = run(program);
+  std::string str = "(3)";
+	REQUIRE(str == value.makeString());
+}
+
+TEST_CASE("test Interpreter parser for makeString none type", "[interpreter]") {
+  std::string program = "(get-property \"foo\" (+ 1 2))";
+	Expression value = run(program);
+  std::string str = "NONE";
+	REQUIRE(str == value.makeString());
+}
+
+TEST_CASE("test Interpreter parser for makeTail", "[interpreter]") {
+  std::string program = "(list 1 2 3)";
+	Expression value = run(program);
+  std::vector<Expression> vec = { Expression(1), Expression(2), Expression(3) };
+	REQUIRE(vec == value.makeTail());
+}
+
+TEST_CASE("test Interpreter parser for isPoint false", "[interpreter]") {
+  std::map<std::string, Expression> propertymap;
+  std::string program = "(set-property \"size\" 10 (make-point 0 0))";
+  Expression exp(5);
+	REQUIRE(exp.isPoint() == false);
+}
+
+TEST_CASE("test Interpreter parser for isLine false", "[interpreter]") {
+  std::map<std::string, Expression> propertymap;
+  std::string program = "(set-property \"size\" 10 (make-point 0 0))";
+  Expression exp(5);
+	REQUIRE(exp.isLine() == false);
+}
+
+TEST_CASE("test Interpreter parser for isText false", "[interpreter]") {
+  std::map<std::string, Expression> propertymap;
+  std::string program = "(set-property \"size\" 10 (make-point 0 0))";
+  Expression exp(5);
+	REQUIRE(exp.isText() == false);
+}
+
+/*TEST_CASE("test Interpreter parser for getSize", "[interpreter]") {
+  std::string program = "(set-property \"size\" 10 (make-point 0 0))";
+  Expression value = run(program);
+	REQUIRE(value.getSize() == 10.0);
 }*/
 
+//(begin (define a (make-point 5 5)) (get-property "object-name" a))
 TEST_CASE( "Test Interpreter parser with numerical literals", "[interpreter]" ) {
 
   std::vector<std::string> programs = {"(1)", "(+1)", "(+1e+0)", "(1e-0)"};

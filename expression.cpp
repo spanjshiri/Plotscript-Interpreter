@@ -504,10 +504,8 @@ std::vector<Expression> Expression::makeTail() const noexcept{
 
 bool Expression::isPoint() const noexcept{
   bool point = false;
-  std::cout << "Inside isPoint Before" << std::endl;
   Expression pointExp(Atom("\"point\""));
   if(propertymap.find("\"object-name\"") != propertymap.end()){
-    std::cout << "Inside isPoint Before" << std::endl;
     if(propertymap.at("\"object-name\"") == pointExp){
       point = true;
     }

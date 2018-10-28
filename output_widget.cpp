@@ -34,7 +34,6 @@ void OutputWidget::recieveText(QString str){
             Expression exp = interp.evaluate();
             scene->clear();
             if(exp.isText()){
-                //qDebug() << "Inside stupid text";
                 std::vector<Expression> tail = exp.makeTail();
                 Expression newExp = exp.getPosition();
                 std::vector<Expression> tail2 = newExp.makeTail();
