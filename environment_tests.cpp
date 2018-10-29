@@ -22,6 +22,14 @@ TEST_CASE( "Test default constructor", "[environment]" ) {
   REQUIRE(!env.is_proc(Atom("op")));
 }
 
+TEST_CASE( "Test assignment operator", "[environment]") {
+	Environment env;
+	env.add_exp(Atom("cool"),Expression(3.0));
+	Environment env2;
+	env2 = env;
+	REQUIRE(env2.is_exp(Atom("cool")));
+}
+
 TEST_CASE( "Test get expression", "[environment]" ) {
   Environment env;
 
