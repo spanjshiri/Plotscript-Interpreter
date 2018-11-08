@@ -9,6 +9,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsTextItem>
 #include <QGraphicsEllipseItem>
+#include <QtMath>
 #include <string>
 #include <sstream>
 #include <iostream>

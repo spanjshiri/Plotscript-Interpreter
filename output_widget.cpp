@@ -36,13 +36,21 @@ void OutputWidget::recieveText(QString str){
             if(exp.isText()){
                 std::vector<Expression> tail = exp.makeTail();
                 Expression newExp = exp.getPosition();
+                double scale = exp.getTextScale();
+                double rotation = exp.getTextRotation();
                 std::vector<Expression> tail2 = newExp.makeTail();
                 double x = tail2[0].head().asNumber();
                 double y = tail2[1].head().asNumber();
                 std::string text = exp.head().asString();
                 std::string subText = text.substr(1,text.length()-2);
                 QGraphicsTextItem *str = scene->addText(QString::fromStdString(subText));
+                // auto font = QFont("Monospace");
+                // font.setStyleHint(QFont::TypeWriter);
+                // font.setPointSize(1);
+                // str->setFont(font);
                 str->setPos(x, y);
+                str->setScale(scale);
+                str->setRotation(rotation*(180/M_PI));
                 singleTextPrinted = true;
                 return;
             }
