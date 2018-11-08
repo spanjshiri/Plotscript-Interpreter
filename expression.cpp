@@ -547,4 +547,12 @@ Expression Expression::getPosition() const noexcept{
   return propertymap.at("\"position\"");
 }
 
+double Expression::getTextScale() const noexcept{
+  return propertymap.at("\"text-scale\"").head().asNumber();
+}
+  
+double Expression::getTextRotation() const noexcept{
+  return propertymap.at("\"text-rotation\"").head().asNumber();
+}
+
 

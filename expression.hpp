@@ -100,6 +100,10 @@ public:
   double getThickness() const noexcept;
 
   Expression getPosition() const noexcept;
+
+  double getTextScale() const noexcept;
+  
+  double getTextRotation() const noexcept;
   
 private:
 
