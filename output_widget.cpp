@@ -48,6 +48,12 @@ void OutputWidget::recieveText(QString str){
                 // font.setStyleHint(QFont::TypeWriter);
                 // font.setPointSize(1);
                 // str->setFont(font);
+                // str->setTextWidth(str->boundingRect().width());
+                // QTextBlockFormat format;
+                // format.setAlignment(Qt::AlignRight);
+                view->fitInView(scene->itemsBoundingRect(), Qt::IgnoreAspectRatio);
+                view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 str->setPos(x, y);
                 str->setScale(scale);
                 str->setRotation(rotation*(180/M_PI));
@@ -126,10 +132,14 @@ void OutputWidget::printList(Expression exp){
                 std::vector<Expression> tail2 = newExp.makeTail();
                 double x = tail2[0].head().asNumber();
                 double y = tail2[1].head().asNumber();
+                double scale = exp.getTextScale();
+                double rotation = exp.getTextRotation();
                 std::string text = (*e).head().asString();
                 std::string subText = text.substr(1,text.length()-2);
                 QGraphicsTextItem *str = scene->addText(QString::fromStdString(subText));
                 str->setPos(x, y);
+                str->setScale(scale);
+                str->setRotation(rotation*(180/M_PI));
             }
             else{
                 scene->addText(QString::fromStdString((*e).makeString()));

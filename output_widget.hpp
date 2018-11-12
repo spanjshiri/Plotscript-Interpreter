@@ -10,6 +10,7 @@
 #include <QGraphicsTextItem>
 #include <QGraphicsEllipseItem>
 #include <QtMath>
+#include <QTextBlockFormat>
 #include <string>
 #include <sstream>
 #include <iostream>
