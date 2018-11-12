@@ -58,6 +58,9 @@ public:
   /// predicate to determine if an Atom is of type Lambda
   bool isLambda() const noexcept;
 
+  /// predicate to determine if an Atom is of type Discrete Plot
+  bool isDiscrete() const noexcept;
+
   /// predicate to determine if an Atom is of type String
   bool isString() const noexcept;
 
@@ -80,13 +83,15 @@ public:
 
   void setLambda();
 
+  void setDiscretePlot();
+
   // helper to set the type and value of a string
   void setString(const std::string & value);
 
 private:
 
   // internal enum of known types
-  enum Type {NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind, LambdaKind, StringKind};
+  enum Type {NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind, LambdaKind, StringKind, DiscreteKind};
 
   // track the type
   Type m_type;

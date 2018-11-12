@@ -85,6 +85,9 @@ Atom & Atom::operator=(const Atom & x){
   else if (x.m_type == LambdaKind){
     setLambda();
   }
+  else if (x.m_type == DiscreteKind){
+    setDiscretePlot();
+  }
 	else if (x.m_type == StringKind) {
 		setString(x.stringValue);
 	}
@@ -128,6 +131,9 @@ bool Atom::isLambda() const noexcept {
   return m_type == LambdaKind;
 }
 
+bool Atom::isDiscrete() const noexcept {
+  return m_type == DiscreteKind;
+}
 
 void Atom::setNumber(double value){
 
@@ -159,6 +165,10 @@ void Atom::setList() {
 
 void Atom::setLambda() {
 	m_type = LambdaKind;
+}
+
+void Atom::setDiscretePlot() {
+  m_type = DiscreteKind;
 }
 
 void Atom::setString(const std::string & value) {
