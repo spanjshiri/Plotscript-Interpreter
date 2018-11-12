@@ -8,9 +8,17 @@ Defines the Expression type and assiciated functions.
 #include <map>
 #include <string>
 #include <vector>
+#include <algorithm> 
 
 #include "token.hpp"
 #include "atom.hpp"
+
+const double N = 20;
+const double A = 3;
+const double B = 3;
+const double C = 2;
+const double D = 2;
+const double P = 0.5;
 
 // forward declare Environment
 class Environment;
@@ -129,6 +137,7 @@ private:
   Expression handle_lambda(Environment & env);
   Expression handle_apply(Environment & env);
   Expression handle_map(Environment & env);
+  Expression discrete_plot(Environment & env);
 
   std::map<std::string, Expression> propertymap;
 };
