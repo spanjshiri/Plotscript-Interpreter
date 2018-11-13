@@ -13,11 +13,11 @@ Defines the Expression type and assiciated functions.
 #include "token.hpp"
 #include "atom.hpp"
 
-const double N = 20;
-const double A = 3;
-const double B = 3;
-const double C = 2;
-const double D = 2;
+const double N = 20.0;
+const double A = 3.0;
+const double B = 3.0;
+const double C = 2.0;
+const double D = 2.0;
 const double P = 0.5;
 
 // forward declare Environment
@@ -50,6 +50,9 @@ public:
 
   // Lambda Constructor
   Expression(const std::vector<Expression> & args, const Atom & a);
+
+  // Discrete-Plot Constructor
+  Expression(const std::vector<Expression> & args, std::string & str);
 
   /// deep-copy assign an expression  (recursive)
   Expression & operator=(const Expression & a);
@@ -102,6 +105,8 @@ public:
   bool isLine() const noexcept;
   
   bool isText() const noexcept;
+
+  bool isDiscrete() const noexcept;
 
   double getSize() const noexcept;
 

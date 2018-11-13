@@ -35,6 +35,7 @@ Expression::Expression(const std::vector<Expression> & args, const Atom & a) {
 	}
 }
 
+
 // Assignment operator for Expression
 Expression & Expression::operator=(const Expression & a){
 
@@ -225,9 +226,9 @@ Expression Expression::discrete_plot(Environment & env){
   }
 
   double xMin = 10000;
-  double xMax = 0;
+  double xMax = -10000;
   double yMin = 10000;
-  double yMax = 0;
+  double yMax = -10000;
 
   for(auto e = (data.tailConstBegin()); e != data.tailConstEnd(); e++){
     std::vector<Expression> tail = (*e).makeTail();
@@ -398,7 +399,9 @@ Expression Expression::discrete_plot(Environment & env){
     finalList.emplace_back((*g).m_tail[1]);
   }
 
-  return Expression(finalList);
+  Expression finallist = Expression(finalList);
+  finallist.head().setDiscretePlot();
+  return finallist;
 }
 
 // Adds map functionality for a list
@@ -725,6 +728,17 @@ bool Expression::isText() const noexcept{
     }
   }
   return text;
+}
+
+bool Expression::isDiscrete() const noexcept{
+  bool discrete = false;
+  Expression discreteExp(Atom("\"discrete-plot\""));
+  if(propertymap.find("\"object-name\"") != propertymap.end()){
+    if(propertymap.at("\"object-name\"") == discreteExp){
+      discrete = true;
+    }
+  }
+  return discrete;
 }
 
 double Expression::getSize() const noexcept{
