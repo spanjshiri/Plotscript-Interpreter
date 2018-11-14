@@ -61,6 +61,9 @@ public:
   /// predicate to determine if an Atom is of type Discrete Plot
   bool isDiscrete() const noexcept;
 
+  /// predicate to determine if an Atom is of type Continuous Plot
+  bool isContinuous() const noexcept;
+
   /// predicate to determine if an Atom is of type String
   bool isString() const noexcept;
 
@@ -85,13 +88,15 @@ public:
 
   void setDiscretePlot();
 
+  void setContinuousPlot();
+
   // helper to set the type and value of a string
   void setString(const std::string & value);
 
 private:
 
   // internal enum of known types
-  enum Type {NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind, LambdaKind, StringKind, DiscreteKind};
+  enum Type {NoneKind, NumberKind, SymbolKind, ComplexKind, ListKind, LambdaKind, StringKind, DiscreteKind, ContinuousKind};
 
   // track the type
   Type m_type;

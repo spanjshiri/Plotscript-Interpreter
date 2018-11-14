@@ -88,6 +88,9 @@ Atom & Atom::operator=(const Atom & x){
   else if (x.m_type == DiscreteKind){
     setDiscretePlot();
   }
+  else if (x.m_type == ContinuousKind){
+    setContinuousPlot();
+  }
 	else if (x.m_type == StringKind) {
 		setString(x.stringValue);
 	}
@@ -135,6 +138,10 @@ bool Atom::isDiscrete() const noexcept {
   return m_type == DiscreteKind;
 }
 
+bool Atom::isContinuous() const noexcept {
+  return m_type == ContinuousKind;
+}
+
 void Atom::setNumber(double value){
 
   m_type = NumberKind;
@@ -169,6 +176,10 @@ void Atom::setLambda() {
 
 void Atom::setDiscretePlot() {
   m_type = DiscreteKind;
+}
+
+void Atom::setContinuousPlot() {
+  m_type = ContinuousKind;
 }
 
 void Atom::setString(const std::string & value) {
