@@ -289,82 +289,6 @@ Expression Expression::discrete_plot(Environment & env){
     finalList.emplace_back(newStem.eval(env));
   }
 
-  // //Bottom Left Point
-  // list.clear();
-  // Expression bottomLeftXPoint = Expression(scaledXMin);
-  // Expression bottomLeftYPoint = Expression(scaledYMax);
-  // list.emplace_back(bottomLeftXPoint);
-  // list.emplace_back(bottomLeftYPoint);
-  // Expression tempBottomLeft = Expression(list, headPoint);
-  // Expression bottomLeftPoint = tempBottomLeft.eval(env);
-  // finalList.emplace_back(bottomLeftPoint);
-
-  // //Bottom Left Vertical Line
-  // list.clear();
-  // Expression midLeftXPoint = Expression(scaledXMin);
-  // Expression midLeftYPoint = Expression(scaledYMid);
-  // list.emplace_back(midLeftXPoint);
-  // list.emplace_back(midLeftYPoint);
-  // Expression tempMidLeft = Expression(list, headPoint);
-  // list.clear();
-  // list.emplace_back(tempBottomLeft);
-  // list.emplace_back(tempMidLeft);
-  // Expression tempBottomLeftLine = Expression(list, headLine);
-  // Expression bottomLeftLine = tempBottomLeftLine.eval(env);
-  // finalList.emplace_back(bottomLeftLine);
-
-  // //Top Right Point
-  // list.clear();
-  // Expression topRightXPoint = Expression(scaledXMax);
-  // Expression topRightYPoint = Expression(scaledYMin);
-  // list.emplace_back(topRightXPoint);
-  // list.emplace_back(topRightYPoint);
-  // Expression tempTopRight = Expression(list, headPoint);
-  // Expression topRightPoint = tempTopRight.eval(env);
-  // finalList.emplace_back(topRightPoint);
-
-  // //Top Right Vertical Line
-  // list.clear();
-  // Expression midRightXPoint = Expression(scaledXMax);
-  // Expression midRightYPoint = Expression(scaledYMid);
-  // list.emplace_back(midRightXPoint);
-  // list.emplace_back(midRightYPoint);
-  // Expression tempMidRight = Expression(list, headPoint);
-  // list.clear();
-  // list.emplace_back(tempTopRight);
-  // list.emplace_back(tempMidRight);
-  // Expression tempTopRightLine = Expression(list, headLine);
-  // Expression topRightLine = tempTopRightLine.eval(env);
-  // finalList.emplace_back(topRightLine);
-
-  // list.emplace_back(-1);
-  // list.emplace_back(0);
-  // Expression xAxisLeft = Expression(list, headPoint);
-  // list.clear();
-  // list.emplace_back(1);
-  // list.emplace_back(0);
-  // Expression xAxisRight = Expression(list, headPoint);
-  // list.clear();
-  // list.emplace_back(0);
-  // list.emplace_back(-1);
-  // Expression yAxisLeft = Expression(list, headPoint);
-  // list.clear();
-  // list.emplace_back(0);
-  // list.emplace_back(1);
-  // Expression yAxisRight = Expression(list, headPoint);
-  // list.clear();
-  // list.emplace_back(xAxisLeft);
-  // list.emplace_back(xAxisRight);
-  // Expression xAxis = Expression(list, headLine);
-  // Expression coolLineX = xAxis.eval(env);
-  // finalList.emplace_back(coolLineX);
-  // list.clear();
-  // list.emplace_back(yAxisLeft);
-  // list.emplace_back(yAxisRight);
-  // Expression yAxis = Expression(list, headLine);
-  // Expression coolLineY = yAxis.eval(env);
-  // finalList.emplace_back(coolLineY);
-
   //Middle Vertical Line
   list.clear();
   if(0 > scaledXMin && 0 < scaledXMax){
@@ -481,6 +405,202 @@ Expression Expression::discrete_plot(Environment & env){
 
   Expression finallist = Expression(finalList);
   finallist.head().setDiscretePlot();
+  return finallist;
+}
+
+// Adds a continuous plot function
+Expression Expression::continuous_plot(Environment & env){
+  Expression func = m_tail[0].eval(env);
+  Expression bounds = m_tail[1].eval(env);
+  Expression options = m_tail[2].eval(env);
+
+  if(!func.head().isLambda() || !bounds.isHeadList() || !options.isHeadList()){
+    throw SemanticError("Error during evaluation: first or second argument ");
+  }
+
+  double xMin = bounds.m_tail[0].head().asNumber();
+  double xMax = bounds.m_tail[1].head().asNumber();
+  std::vector<Expression> list = {};
+  list.emplace_back(m_tail[0]);
+  list.emplace_back(m_tail[1]);
+  Expression yBounds = Expression(list,Atom("map")).eval(env);
+  list.clear();
+  double yMin = yBounds.m_tail[0].head().asNumber();
+  double yMax = yBounds.m_tail[1].head().asNumber();
+
+  std::cout << "XMin: " << xMin << std::endl;
+  std::cout << "XMax: " << xMax << std::endl;
+  std::cout << "yMin: " << yMin << std::endl;
+  std::cout << "yMiax: " << yMax << std::endl;
+
+  double xScale = N/(xMax-xMin);
+  double yScale = N/(yMax-yMin);
+
+  double scaledXMin = xMin*xScale;
+  double scaledXMax = xMax*xScale;
+  double scaledYMin = yMin*yScale;
+  scaledYMin*=-1;
+  double scaledYMax = yMax*yScale;
+  scaledYMax*=-1;
+  //double scaledXMid = (scaledXMax+scaledXMin)/2;
+  //double scaledYMid = (scaledYMax+scaledYMin)/2;
+
+  // double pointx = 0;
+  // double pointy = 0;
+
+  std::vector<Expression> finalList = {};
+
+  Atom headPoint = Atom("make-point");
+  Atom headLine = Atom("make-line");
+
+  // std::cout << "XMax: " << xMax << std::endl;
+  // std::cout << "XMin: " << xMin << std::endl;
+  // std::cout << "YMax: " << yMax << std::endl;
+  // std::cout << "YMin: " << yMin << std::endl;
+
+  // for(auto &newExp : data.m_tail){
+  //   pointx = newExp.m_tail[0].head().asNumber();
+  //   pointy = newExp.m_tail[1].head().asNumber();
+  //   pointx = pointx * xScale;
+  //   pointy = pointy * yScale;
+  //   pointy *= -1;
+  //   list.emplace_back(Expression(pointx));
+  //   list.emplace_back(Expression(pointy));
+  //   Expression newPoint = Expression(list,headPoint);
+  //   list.clear();
+  //   list.emplace_back(Expression(pointx));
+  //   if(yMin > 0){
+  //     list.emplace_back(Expression(-1*yMax));
+  //   }
+  //   else{
+  //     list.emplace_back(Expression(0));
+  //   }
+  //   Expression newIntercept = Expression(list,headPoint);
+  //   list.clear();
+  //   list.emplace_back(newPoint);
+  //   list.emplace_back(newIntercept);
+  //   Expression newStem = Expression(list,headLine);
+  //   list.clear();
+  //   finalList.emplace_back(newPoint.eval(env));
+  //   finalList.emplace_back(newStem.eval(env));
+  // }
+
+  //Middle Vertical Line
+  list.clear();
+  if(0 > scaledXMin && 0 < scaledXMax){
+  Expression topMidXPoint = Expression(0);
+  Expression topMidYPoint = Expression(scaledYMin);
+  list.emplace_back(topMidXPoint);
+  list.emplace_back(topMidYPoint);
+  Expression tempTopMid = Expression(list, headPoint);
+  list.clear();
+  Expression bottomMidXPoint = Expression(0);
+  Expression bottomMidYPoint = Expression(scaledYMax);
+  list.emplace_back(bottomMidXPoint);
+  list.emplace_back(bottomMidYPoint);
+  Expression tempBottomMid = Expression(list, headPoint);
+  list.clear();
+  list.emplace_back(tempTopMid);
+  list.emplace_back(tempBottomMid);
+  Expression tempMidVerticalLine = Expression(list, headLine);
+  Expression midVerticalLine = tempMidVerticalLine.eval(env);
+  finalList.emplace_back(midVerticalLine);
+  }
+
+  //Middle Horizontal Line
+  list.clear();
+  if(0 < scaledYMin && 0 > scaledYMax){
+  Expression leftMidXPoint = Expression(scaledXMin);
+  Expression leftMidYPoint = Expression(0);
+  list.emplace_back(leftMidXPoint);
+  list.emplace_back(leftMidYPoint);
+  Expression tempLeftMid = Expression(list, headPoint);
+  list.clear();
+  Expression rightMidXPoint = Expression(scaledXMax);
+  Expression rightMidYPoint = Expression(0);
+  list.emplace_back(rightMidXPoint);
+  list.emplace_back(rightMidYPoint);
+  Expression tempRightMid = Expression(list, headPoint);
+  list.clear();
+  list.emplace_back(tempLeftMid);
+  list.emplace_back(tempRightMid);
+  Expression tempMidHorizontalLine = Expression(list, headLine);
+  Expression midHorizontalLine = tempMidHorizontalLine.eval(env);
+  finalList.emplace_back(midHorizontalLine);
+  }
+
+  //Bottom Horizontal Line
+  list.clear();
+  Expression bottomRightXPoint = Expression(scaledXMax);
+  Expression bottomRightYPoint = Expression(scaledYMax);
+  list.emplace_back(bottomRightXPoint);
+  list.emplace_back(bottomRightYPoint);
+  Expression tempBottomRight = Expression(list, headPoint);
+  list.clear();
+  Expression bottomLeftXPoint = Expression(scaledXMin);
+  Expression bottomLeftYPoint = Expression(scaledYMax);
+  list.emplace_back(bottomLeftXPoint);
+  list.emplace_back(bottomLeftYPoint);
+  Expression tempBottomLeft = Expression(list, headPoint);
+  list.clear();
+  list.emplace_back(tempBottomLeft);
+  list.emplace_back(tempBottomRight);
+  Expression tempBottomHorizontalLine = Expression(list, headLine);
+  Expression bottomHorizontalLine = tempBottomHorizontalLine.eval(env);
+  finalList.emplace_back(bottomHorizontalLine);
+
+//Top Vertical Line
+  list.clear();
+  Expression topLeftXPoint = Expression(scaledXMin);
+  Expression topLeftYPoint = Expression(scaledYMin);
+  list.emplace_back(topLeftXPoint);
+  list.emplace_back(topLeftYPoint);
+  Expression tempTopLeft = Expression(list, headPoint);
+  list.clear();
+  Expression topRightXPoint = Expression(scaledXMax);
+  Expression topRightYPoint = Expression(scaledYMin);
+  list.emplace_back(topRightXPoint);
+  list.emplace_back(topRightYPoint);
+  Expression tempTopRight = Expression(list, headPoint);
+  list.clear();
+  list.emplace_back(tempTopLeft);
+  list.emplace_back(tempTopRight);
+  Expression tempTopHorizontalLine = Expression(list, headLine);
+  Expression topHorizontalLine = tempTopHorizontalLine.eval(env);
+  finalList.emplace_back(topHorizontalLine);
+
+  //Left Vertical Line
+  list.clear();
+  list.emplace_back(tempBottomLeft);
+  list.emplace_back(tempTopLeft);
+  Expression tempLeftVerticalLine = Expression(list, headLine);
+  Expression leftVerticalLine = tempLeftVerticalLine.eval(env);
+  finalList.emplace_back(leftVerticalLine);
+
+  //Right Vertical Line
+  list.clear();
+  list.emplace_back(tempBottomRight);
+  list.emplace_back(tempTopRight);
+  Expression tempRightVerticalLine = Expression(list, headLine);
+  Expression rightVerticalLine = tempRightVerticalLine.eval(env);
+  finalList.emplace_back(rightVerticalLine);
+
+  std::string stringXMin = "\"" + Atom(xMin).asString() + "\"";
+  std::string stringXMax = "\"" + Atom(xMax).asString() + "\"";
+  std::string stringYMin = "\"" + Atom(yMin).asString() + "\"";
+  std::string stringYMax = "\"" + Atom(yMax).asString() + "\"";
+
+  finalList.emplace_back(Expression(Atom(stringXMin)));
+  finalList.emplace_back(Expression(Atom(stringXMax)));
+  finalList.emplace_back(Expression(Atom(stringYMin)));
+  finalList.emplace_back(Expression(Atom(stringYMax)));
+
+  for(auto g = (options.tailConstBegin()); g != options.tailConstEnd(); g++){
+    finalList.emplace_back((*g).m_tail[1]);
+  }
+
+  Expression finallist = Expression(finalList);
+  finallist.head().setContinuousPlot();
   return finallist;
 }
 
@@ -677,6 +797,10 @@ Expression Expression::eval(Environment & env){
   // discrete plot special-form
   else if(m_head.isSymbol() && m_head.asSymbol() == "discrete-plot"){
     return discrete_plot(env);
+  }
+  // continuous plot special-form
+  else if(m_head.isSymbol() && m_head.asSymbol() == "continuous-plot"){
+    return continuous_plot(env);
   }
   // else attempt to treat as procedure
   else{ 

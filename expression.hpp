@@ -143,6 +143,7 @@ private:
   Expression handle_apply(Environment & env);
   Expression handle_map(Environment & env);
   Expression discrete_plot(Environment & env);
+  Expression continuous_plot(Environment & env);
 
   std::map<std::string, Expression> propertymap;
 };
