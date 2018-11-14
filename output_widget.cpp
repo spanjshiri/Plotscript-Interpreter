@@ -67,7 +67,7 @@ void OutputWidget::recieveText(QString str){
                 singleTextPrinted = true;
                 return;
             }
-            if(exp.isHeadList() || exp.head().isDiscrete()){
+            if(exp.isHeadList() || exp.head().isDiscrete() || exp.head().isContinuous()){
                 printList(exp);
             }
             else if(exp.head().isLambda()){
@@ -115,7 +115,7 @@ void OutputWidget::printList(Expression exp){
         double y2 = p2[1].head().asNumber();
         QPen pen = QPen(Qt::black);
         pen.setWidth(thickness);
-        if(exp.head().isDiscrete()){
+        if(exp.head().isDiscrete() || exp.head().isContinuous()){
             pen.setWidth(0);
         }
         scene->QGraphicsScene::addLine(x1,y1,x2,y2,pen);
@@ -155,7 +155,7 @@ void OutputWidget::printList(Expression exp){
                 double y2 = p2[1].head().asNumber();
                 QPen pen = QPen(Qt::black);
                 pen.setWidth(thickness);
-                if(exp.head().isDiscrete()){
+                if(exp.head().isDiscrete() || exp.head().isContinuous()){
                     pen.setWidth(0);
                 }
                 scene->QGraphicsScene::addLine(x1,y1,x2,y2,pen);
@@ -191,6 +191,134 @@ void OutputWidget::printList(Expression exp){
                 view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             }
             else if(exp.head().isDiscrete()){
+                static int count = 0;
+                static std::string stringXMin = "";
+                static std::string stringXMax = "";
+                static std::string stringYMin = "";
+                static std::string stringYMax = "";
+                static std::string stringTitle = "";
+                static std::string stringXLabel = "";
+                static std::string stringYLabel = "";
+                static double xMin = 0;
+                static double xMax = 0;
+                static double yMin = 0;
+                static double yMax = 0;
+
+                if(count == 0){
+                    stringXMin = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                    xMin = std::stod(stringXMin);
+                }
+                else if(count ==  1){
+                    stringXMax = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                    xMax = std::stod(stringXMax);
+                }
+                else if(count == 2){
+                    stringYMin = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                    yMin = std::stod(stringYMin);
+                }
+                else if(count == 3){
+                    stringYMax = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                    yMax = std::stod(stringYMax);
+                }
+                else if(count == 4){
+                    stringTitle = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                }
+                else if(count == 5){
+                    stringXLabel = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                }
+                else if(count == 6){
+                    stringYLabel = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
+                    QGraphicsTextItem *str0 = scene->addText(QString::fromStdString(stringYMin));
+                    QGraphicsTextItem *str1 = scene->addText(QString::fromStdString(stringYMax));
+                    QGraphicsTextItem *str2 = scene->addText(QString::fromStdString(stringXMin));
+                    QGraphicsTextItem *str3 = scene->addText(QString::fromStdString(stringXMax));
+                    QGraphicsTextItem *str4 = scene->addText(QString::fromStdString(stringTitle));
+                    QGraphicsTextItem *str5 = scene->addText(QString::fromStdString(stringXLabel));
+                    QGraphicsTextItem *str6 = scene->addText(QString::fromStdString(stringYLabel));
+                    auto font = QFont("Monospace");
+                    font.setStyleHint(QFont::TypeWriter);
+                    font.setPointSize(1);
+                    str0->setFont(font);
+                    str1->setFont(font);
+                    str2->setFont(font);
+                    str3->setFont(font);
+                    str4->setFont(font);
+                    str5->setFont(font);
+                    str6->setFont(font);
+                    double xScale = N/(xMax-xMin);
+                    double yScale = (N/(yMax-yMin));
+                    double scaledXMin = xMin*xScale;
+                    double scaledXMax = xMax*xScale;
+                    double scaledYMin = -1*yMin*yScale;
+                    double scaledYMax = -1*yMax*yScale;
+                    double ouXPos = (scaledXMin-C) - (str0->boundingRect().width()/2);
+                    double ouYPos = (scaledYMin) - (str2->boundingRect().height()/2);
+                    double olXPos = (scaledXMin-C) - (str1->boundingRect().width()/2);
+                    double olYPos = (scaledYMax) - (str3->boundingRect().height()/2);
+                    double alXPos = (scaledXMin) - (str2->boundingRect().width()/2);
+                    double alYPos = (scaledYMin+C) - (str3->boundingRect().height()/2);
+                    double auXPos = (scaledXMax) - (str1->boundingRect().width()/2);
+                    double auYPos = (scaledYMin+C) - (str2->boundingRect().height()/2);
+                    double titleXPos = ((scaledXMin+scaledXMax)/2) - (str4->boundingRect().width()/2);
+                    double titleYPos = (scaledYMax-A) - (str4->boundingRect().height()/2);
+                    double xLabelXPos = ((scaledXMin+scaledXMax)/2) - (str5->boundingRect().width()/2);
+                    double xLabelYPos = (scaledYMin+A) - (str5->boundingRect().height()/2);
+                    double yLabelXPos = (scaledXMin-B) - (str6->boundingRect().width()/2);
+                    double yLabelYPos = ((scaledYMin+scaledYMax)/2) - (str6->boundingRect().height()/2);
+                    std::cout << "str.width/2: " << (str2->boundingRect().width()/2) << std::endl;
+                    std::cout << "xScale: " << xScale << std::endl;
+                    std::cout << "yScale: " << yScale << std::endl;
+                    std::cout << "scaledXMin: " << scaledXMin << std::endl;
+                    std::cout << "scaledXMax: " << scaledXMax << std::endl;
+                    std::cout << "scaledYMin: " << scaledYMin << std::endl;
+                    std::cout << "scaledYMax: " << scaledYMax << std::endl;
+                    std::cout << "titleXPos: " << titleXPos << std::endl;
+                    std::cout << "titleYPos: " << titleYPos << std::endl;
+                    std::cout << "xLabelXPos:" << xLabelXPos << std::endl;
+                    std::cout << "xLabelYPos:" << xLabelYPos << std::endl;
+                    std::cout << "yLabelXPos:" << yLabelXPos << std::endl;
+                    std::cout << "yLabelYPos:" << yLabelYPos << std::endl;
+                    std::cout << "ouXPos: " << olXPos << std::endl;
+                    std::cout << "ouYPos:" << olYPos << std::endl;
+                    std::cout << "olXPos: " << ouXPos << std::endl;
+                    std::cout << "olYPos:" << ouYPos << std::endl;
+                    std::cout << "auXPos: " << auXPos << std::endl;
+                    std::cout << "auYPos:" << auYPos << std::endl;
+                    std::cout << "alXPos: " << alXPos << std::endl;
+                    std::cout << "alYPos:" << alYPos << std::endl;
+                    str0->setPos(ouXPos,ouYPos);
+                    str1->setPos(olXPos,olYPos);
+                    str2->setPos(alXPos,alYPos);
+                    str3->setPos(auXPos,auYPos);
+                    str4->setPos(titleXPos,titleYPos);
+                    str5->setPos(xLabelXPos,xLabelYPos);
+                    // QRectF strRect = str6->sceneBoundingRect();
+                    QPointF centerText = QPointF(yLabelXPos,yLabelYPos);
+                    str6->setPos(centerText);
+                    QPointF newCenter = str6->boundingRect().center();
+                    str6->setTransformOriginPoint(newCenter);
+                    // str6->setPos(yLabelXPos,yLabelYPos);
+                    str6->setRotation(-90);
+                    view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                    count = 0;
+                    stringXMin = "";
+                    stringXMax = "";
+                    stringYMin = "";
+                    stringYMax = "";
+                    stringTitle = "";
+                    stringXLabel = "";
+                    stringYLabel = "";
+                    xMin = 0;
+                    xMax = 0;
+                    yMin = 0;
+                    yMax = 0;
+                    return;
+                }
+                count++;
+            }
+            else if(exp.head().isContinuous()){
                 static int count = 0;
                 static std::string stringXMin = "";
                 static std::string stringXMax = "";
