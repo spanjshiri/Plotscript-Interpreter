@@ -119,8 +119,6 @@ Expression apply(const Atom & op, const std::vector<Expression> & args, const En
 			index++;
 		}
 		if (args.size() != index) {
-      std::cout << "Args size: " << args.size() << std::endl;
-      std::cout << "Index: " << index << std::endl;
 			throw SemanticError("Error: during apply : Error in call to procedure : invalid number of arguments.");
 		}
 		index = 0;
@@ -259,10 +257,10 @@ Expression Expression::discrete_plot(Environment & env){
   Atom headPoint = Atom("make-point");
   Atom headLine = Atom("make-line");
 
-  std::cout << "XMax: " << xMax << std::endl;
-  std::cout << "XMin: " << xMin << std::endl;
-  std::cout << "YMax: " << yMax << std::endl;
-  std::cout << "YMin: " << yMin << std::endl;
+  // std::cout << "XMax: " << xMax << std::endl;
+  // std::cout << "XMin: " << xMin << std::endl;
+  // std::cout << "YMax: " << yMax << std::endl;
+  // std::cout << "YMin: " << yMin << std::endl;
 
   for(auto &newExp : data.m_tail){
     pointx = newExp.m_tail[0].head().asNumber();
