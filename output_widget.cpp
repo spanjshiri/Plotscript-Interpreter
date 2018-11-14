@@ -84,13 +84,15 @@ void OutputWidget::printList(Expression exp){
         double h = exp.getSize();
         double x = tail[0].head().asNumber()-(w/2);
         double y = tail[1].head().asNumber()-(w/2);
-        const QPen pen = QPen(Qt::black);
-        const QBrush brush = QBrush(Qt::black);
         if(exp.head().isDiscrete()){
             w = .5;
             h = .5;
         }
-        scene->QGraphicsScene::addEllipse(x,y,w,h,pen,brush);
+        QRectF values = QRectF(x,y,w,h);
+        values.moveCenter(QPointF(x,y));
+        const QPen pen = QPen(Qt::NoPen);
+        const QBrush brush = QBrush(Qt::black);
+        scene->QGraphicsScene::addEllipse(values,pen,brush);
         view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
         view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -122,13 +124,15 @@ void OutputWidget::printList(Expression exp){
                 double h = (*e).getSize();
                 double x = tail[0].head().asNumber()-(w/2);
                 double y = tail[1].head().asNumber()-(w/2);
-                const QPen pen = QPen(Qt::black);
-                const QBrush brush = QBrush(Qt::black);
                 if(exp.head().isDiscrete()){
                     w = .5;
                     h = .5;
                 }
-                scene->QGraphicsScene::addEllipse(x,y,w,h,pen,brush);
+                QRectF values = QRectF(x,y,w,h);
+                values.moveCenter(QPointF(x,y));
+                const QPen pen = QPen(Qt::NoPen);
+                const QBrush brush = QBrush(Qt::black);
+                scene->QGraphicsScene::addEllipse(values,pen,brush);
                 view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
                 view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -215,10 +219,10 @@ void OutputWidget::printList(Expression exp){
                 }
                 else if(count == 6){
                     stringYLabel = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
-                    QGraphicsTextItem *str0 = scene->addText(QString::fromStdString(stringXMin));
-                    QGraphicsTextItem *str1 = scene->addText(QString::fromStdString(stringXMax));
-                    QGraphicsTextItem *str2 = scene->addText(QString::fromStdString(stringYMin));
-                    QGraphicsTextItem *str3 = scene->addText(QString::fromStdString(stringYMax));
+                    QGraphicsTextItem *str0 = scene->addText(QString::fromStdString(stringYMin));
+                    QGraphicsTextItem *str1 = scene->addText(QString::fromStdString(stringYMax));
+                    QGraphicsTextItem *str2 = scene->addText(QString::fromStdString(stringXMin));
+                    QGraphicsTextItem *str3 = scene->addText(QString::fromStdString(stringXMax));
                     QGraphicsTextItem *str4 = scene->addText(QString::fromStdString(stringTitle));
                     QGraphicsTextItem *str5 = scene->addText(QString::fromStdString(stringXLabel));
                     QGraphicsTextItem *str6 = scene->addText(QString::fromStdString(stringYLabel));
@@ -233,23 +237,23 @@ void OutputWidget::printList(Expression exp){
                     str5->setFont(font);
                     str6->setFont(font);
                     double xScale = N/(xMax-xMin);
-                    double yScale = N/(yMax-yMin);
+                    double yScale = (N/(yMax-yMin));
                     double scaledXMin = xMin*xScale;
                     double scaledXMax = xMax*xScale;
-                    double scaledYMin = yMin*yScale;
-                    double scaledYMax = yMax*yScale;
+                    double scaledYMin = -1*yMin*yScale;
+                    double scaledYMax = -1*yMax*yScale;
                     double ouXPos = (scaledXMin-C) - (str0->boundingRect().width()/2);
                     double ouYPos = (scaledYMin) - (str2->boundingRect().height()/2);
                     double olXPos = (scaledXMin-C) - (str0->boundingRect().width()/2);
                     double olYPos = (scaledYMax) - (str3->boundingRect().height()/2);
                     double alXPos = (scaledXMin) - (str0->boundingRect().width()/2);
-                    double alYPos = (scaledYMax+C) - (str3->boundingRect().height()/2);
+                    double alYPos = (scaledYMin+C) - (str3->boundingRect().height()/2);
                     double auXPos = (scaledXMax) - (str1->boundingRect().width()/2);
-                    double auYPos = (scaledYMax+C) - (str2->boundingRect().height()/2);
+                    double auYPos = (scaledYMin+C) - (str2->boundingRect().height()/2);
                     double titleXPos = ((scaledXMin+scaledXMax)/2) - (str4->boundingRect().width()/2);
-                    double titleYPos = (scaledYMin-A) - (str4->boundingRect().height()/2);
+                    double titleYPos = (scaledYMax-A) - (str4->boundingRect().height()/2);
                     double xLabelXPos = ((scaledXMin+scaledXMax)/2) - (str5->boundingRect().width()/2);
-                    double xLabelYPos = (scaledYMax+A) - (str5->boundingRect().height()/2);
+                    double xLabelYPos = (scaledYMin+A) - (str5->boundingRect().height()/2);
                     double yLabelXPos = (scaledXMin-B) - (str6->boundingRect().height()/2);
                     double yLabelYPos = ((scaledYMin+scaledYMax)/2) + (str6->boundingRect().width()/2);
                     std::cout << "xScale: " << xScale << std::endl;

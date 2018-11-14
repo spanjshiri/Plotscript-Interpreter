@@ -244,9 +244,14 @@ Expression Expression::discrete_plot(Environment & env){
   double scaledXMin = xMin*xScale;
   double scaledXMax = xMax*xScale;
   double scaledYMin = yMin*yScale;
+  scaledYMin*=-1;
   double scaledYMax = yMax*yScale;
-  double scaledXMid = (scaledXMax+scaledXMin)/2;
-  double scaledYMid = (scaledYMax+scaledYMin)/2;
+  scaledYMax*=-1;
+  //double scaledXMid = (scaledXMax+scaledXMin)/2;
+  //double scaledYMid = (scaledYMax+scaledYMin)/2;
+
+  double pointx = 0;
+  double pointy = 0;
 
   std::vector<Expression> list = {};
   std::vector<Expression> finalList = {};
@@ -254,62 +259,124 @@ Expression Expression::discrete_plot(Environment & env){
   Atom headPoint = Atom("make-point");
   Atom headLine = Atom("make-line");
 
-  //Bottom Left Point
-  Expression bottomLeftXPoint = Expression(scaledXMin);
-  Expression bottomLeftYPoint = Expression(scaledYMax);
-  list.emplace_back(bottomLeftXPoint);
-  list.emplace_back(bottomLeftYPoint);
-  Expression tempBottomLeft = Expression(list, headPoint);
-  Expression bottomLeftPoint = tempBottomLeft.eval(env);
-  finalList.emplace_back(bottomLeftPoint);
+  std::cout << "XMax: " << xMax << std::endl;
+  std::cout << "XMin: " << xMin << std::endl;
+  std::cout << "YMax: " << yMax << std::endl;
+  std::cout << "YMin: " << yMin << std::endl;
 
-  //Bottom Left Vertical Line
-  list.clear();
-  Expression midLeftXPoint = Expression(scaledXMin);
-  Expression midLeftYPoint = Expression(scaledYMid);
-  list.emplace_back(midLeftXPoint);
-  list.emplace_back(midLeftYPoint);
-  Expression tempMidLeft = Expression(list, headPoint);
-  list.clear();
-  list.emplace_back(tempBottomLeft);
-  list.emplace_back(tempMidLeft);
-  Expression tempBottomLeftLine = Expression(list, headLine);
-  Expression bottomLeftLine = tempBottomLeftLine.eval(env);
-  finalList.emplace_back(bottomLeftLine);
+  for(auto &newExp : data.m_tail){
+    pointx = newExp.m_tail[0].head().asNumber();
+    pointy = newExp.m_tail[1].head().asNumber();
+    pointx = pointx * xScale;
+    pointy = pointy * yScale;
+    pointy *= -1;
+    list.emplace_back(Expression(pointx));
+    list.emplace_back(Expression(pointy));
+    Expression newPoint = Expression(list,headPoint);
+    list.clear();
+    list.emplace_back(Expression(pointx));
+    if(yMin > 0){
+      list.emplace_back(Expression(-1*yMax));
+    }
+    else{
+      list.emplace_back(Expression(0));
+    }
+    Expression newIntercept = Expression(list,headPoint);
+    list.clear();
+    list.emplace_back(newPoint);
+    list.emplace_back(newIntercept);
+    Expression newStem = Expression(list,headLine);
+    list.clear();
+    finalList.emplace_back(newPoint.eval(env));
+    finalList.emplace_back(newStem.eval(env));
+  }
 
-  //Top Right Point
-  list.clear();
-  Expression topRightXPoint = Expression(scaledXMax);
-  Expression topRightYPoint = Expression(scaledYMin);
-  list.emplace_back(topRightXPoint);
-  list.emplace_back(topRightYPoint);
-  Expression tempTopRight = Expression(list, headPoint);
-  Expression topRightPoint = tempTopRight.eval(env);
-  finalList.emplace_back(topRightPoint);
+  // //Bottom Left Point
+  // list.clear();
+  // Expression bottomLeftXPoint = Expression(scaledXMin);
+  // Expression bottomLeftYPoint = Expression(scaledYMax);
+  // list.emplace_back(bottomLeftXPoint);
+  // list.emplace_back(bottomLeftYPoint);
+  // Expression tempBottomLeft = Expression(list, headPoint);
+  // Expression bottomLeftPoint = tempBottomLeft.eval(env);
+  // finalList.emplace_back(bottomLeftPoint);
 
-  //Top Right Vertical Line
-  list.clear();
-  Expression midRightXPoint = Expression(scaledXMax);
-  Expression midRightYPoint = Expression(scaledYMid);
-  list.emplace_back(midRightXPoint);
-  list.emplace_back(midRightYPoint);
-  Expression tempMidRight = Expression(list, headPoint);
-  list.clear();
-  list.emplace_back(tempTopRight);
-  list.emplace_back(tempMidRight);
-  Expression tempTopRightLine = Expression(list, headLine);
-  Expression topRightLine = tempTopRightLine.eval(env);
-  finalList.emplace_back(topRightLine);
+  // //Bottom Left Vertical Line
+  // list.clear();
+  // Expression midLeftXPoint = Expression(scaledXMin);
+  // Expression midLeftYPoint = Expression(scaledYMid);
+  // list.emplace_back(midLeftXPoint);
+  // list.emplace_back(midLeftYPoint);
+  // Expression tempMidLeft = Expression(list, headPoint);
+  // list.clear();
+  // list.emplace_back(tempBottomLeft);
+  // list.emplace_back(tempMidLeft);
+  // Expression tempBottomLeftLine = Expression(list, headLine);
+  // Expression bottomLeftLine = tempBottomLeftLine.eval(env);
+  // finalList.emplace_back(bottomLeftLine);
+
+  // //Top Right Point
+  // list.clear();
+  // Expression topRightXPoint = Expression(scaledXMax);
+  // Expression topRightYPoint = Expression(scaledYMin);
+  // list.emplace_back(topRightXPoint);
+  // list.emplace_back(topRightYPoint);
+  // Expression tempTopRight = Expression(list, headPoint);
+  // Expression topRightPoint = tempTopRight.eval(env);
+  // finalList.emplace_back(topRightPoint);
+
+  // //Top Right Vertical Line
+  // list.clear();
+  // Expression midRightXPoint = Expression(scaledXMax);
+  // Expression midRightYPoint = Expression(scaledYMid);
+  // list.emplace_back(midRightXPoint);
+  // list.emplace_back(midRightYPoint);
+  // Expression tempMidRight = Expression(list, headPoint);
+  // list.clear();
+  // list.emplace_back(tempTopRight);
+  // list.emplace_back(tempMidRight);
+  // Expression tempTopRightLine = Expression(list, headLine);
+  // Expression topRightLine = tempTopRightLine.eval(env);
+  // finalList.emplace_back(topRightLine);
+
+  // list.emplace_back(-1);
+  // list.emplace_back(0);
+  // Expression xAxisLeft = Expression(list, headPoint);
+  // list.clear();
+  // list.emplace_back(1);
+  // list.emplace_back(0);
+  // Expression xAxisRight = Expression(list, headPoint);
+  // list.clear();
+  // list.emplace_back(0);
+  // list.emplace_back(-1);
+  // Expression yAxisLeft = Expression(list, headPoint);
+  // list.clear();
+  // list.emplace_back(0);
+  // list.emplace_back(1);
+  // Expression yAxisRight = Expression(list, headPoint);
+  // list.clear();
+  // list.emplace_back(xAxisLeft);
+  // list.emplace_back(xAxisRight);
+  // Expression xAxis = Expression(list, headLine);
+  // Expression coolLineX = xAxis.eval(env);
+  // finalList.emplace_back(coolLineX);
+  // list.clear();
+  // list.emplace_back(yAxisLeft);
+  // list.emplace_back(yAxisRight);
+  // Expression yAxis = Expression(list, headLine);
+  // Expression coolLineY = yAxis.eval(env);
+  // finalList.emplace_back(coolLineY);
 
   //Middle Vertical Line
   list.clear();
-  Expression topMidXPoint = Expression(scaledXMid);
+  if(0 > scaledXMin && 0 < scaledXMax){
+  Expression topMidXPoint = Expression(0);
   Expression topMidYPoint = Expression(scaledYMin);
   list.emplace_back(topMidXPoint);
   list.emplace_back(topMidYPoint);
   Expression tempTopMid = Expression(list, headPoint);
   list.clear();
-  Expression bottomMidXPoint = Expression(scaledXMid);
+  Expression bottomMidXPoint = Expression(0);
   Expression bottomMidYPoint = Expression(scaledYMax);
   list.emplace_back(bottomMidXPoint);
   list.emplace_back(bottomMidYPoint);
@@ -320,17 +387,19 @@ Expression Expression::discrete_plot(Environment & env){
   Expression tempMidVerticalLine = Expression(list, headLine);
   Expression midVerticalLine = tempMidVerticalLine.eval(env);
   finalList.emplace_back(midVerticalLine);
+  }
 
   //Middle Horizontal Line
   list.clear();
+  if(0 < scaledYMin && 0 > scaledYMax){
   Expression leftMidXPoint = Expression(scaledXMin);
-  Expression leftMidYPoint = Expression(scaledYMid);
+  Expression leftMidYPoint = Expression(0);
   list.emplace_back(leftMidXPoint);
   list.emplace_back(leftMidYPoint);
   Expression tempLeftMid = Expression(list, headPoint);
   list.clear();
   Expression rightMidXPoint = Expression(scaledXMax);
-  Expression rightMidYPoint = Expression(scaledYMid);
+  Expression rightMidYPoint = Expression(0);
   list.emplace_back(rightMidXPoint);
   list.emplace_back(rightMidYPoint);
   Expression tempRightMid = Expression(list, headPoint);
@@ -340,6 +409,7 @@ Expression Expression::discrete_plot(Environment & env){
   Expression tempMidHorizontalLine = Expression(list, headLine);
   Expression midHorizontalLine = tempMidHorizontalLine.eval(env);
   finalList.emplace_back(midHorizontalLine);
+  }
 
   //Bottom Horizontal Line
   list.clear();
@@ -348,6 +418,12 @@ Expression Expression::discrete_plot(Environment & env){
   list.emplace_back(bottomRightXPoint);
   list.emplace_back(bottomRightYPoint);
   Expression tempBottomRight = Expression(list, headPoint);
+  list.clear();
+  Expression bottomLeftXPoint = Expression(scaledXMin);
+  Expression bottomLeftYPoint = Expression(scaledYMax);
+  list.emplace_back(bottomLeftXPoint);
+  list.emplace_back(bottomLeftYPoint);
+  Expression tempBottomLeft = Expression(list, headPoint);
   list.clear();
   list.emplace_back(tempBottomLeft);
   list.emplace_back(tempBottomRight);
@@ -362,6 +438,12 @@ Expression Expression::discrete_plot(Environment & env){
   list.emplace_back(topLeftXPoint);
   list.emplace_back(topLeftYPoint);
   Expression tempTopLeft = Expression(list, headPoint);
+  list.clear();
+  Expression topRightXPoint = Expression(scaledXMax);
+  Expression topRightYPoint = Expression(scaledYMin);
+  list.emplace_back(topRightXPoint);
+  list.emplace_back(topRightYPoint);
+  Expression tempTopRight = Expression(list, headPoint);
   list.clear();
   list.emplace_back(tempTopLeft);
   list.emplace_back(tempTopRight);
