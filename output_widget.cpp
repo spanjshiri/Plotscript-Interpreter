@@ -26,8 +26,11 @@ OutputWidget::OutputWidget(QWidget * parent) : QWidget(parent) {
 void OutputWidget::recieveText(QString str){
     std::istringstream expression(str.toStdString());
     if(!interp.parseStream(expression)){
-      scene->clear();
-      scene->addText("Error: Invalid Expression. Could not parse.");
+        scene->clear();
+        scene->addText("Error: Invalid Expression. Could not parse.");
+        view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
     else{
         try{
@@ -48,9 +51,6 @@ void OutputWidget::recieveText(QString str){
                 font.setStyleHint(QFont::TypeWriter);
                 font.setPointSize(1);
                 str->setFont(font);
-                view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-                view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-                view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 //str->setPos(x, y);
                 QRectF strRect = str->sceneBoundingRect();
                 QPointF centerText = QPointF(x-(strRect.width()/2),y-(strRect.height()/2));
@@ -61,6 +61,9 @@ void OutputWidget::recieveText(QString str){
                 str->setTransformOriginPoint(newCenter);
                 str->setScale(scale);
                 str->setRotation(rotation*(180/M_PI));
+                view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 singleTextPrinted = true;
                 return;
             }
@@ -176,9 +179,6 @@ void OutputWidget::printList(Expression exp){
                 font.setStyleHint(QFont::TypeWriter);
                 font.setPointSize(1);
                 str->setFont(font);
-                view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-                view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-                view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 QRectF strRect = str->sceneBoundingRect();
                 QPointF centerText = QPointF(x-(strRect.width()/2),y-(strRect.height()/2));
                 std::cout << "xPos of Multiple Text: " << x-(strRect.width()/2) << std::endl;
@@ -188,6 +188,9 @@ void OutputWidget::printList(Expression exp){
                 str->setTransformOriginPoint(newCenter);
                 str->setScale(scale);
                 str->setRotation(rotation*(180/M_PI));
+                view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             }
             else if(exp.head().isDiscrete()){
                 static int count = 0;
@@ -254,7 +257,7 @@ void OutputWidget::printList(Expression exp){
                     double ouYPos = (scaledYMin) - (str2->boundingRect().height()/2);
                     double olXPos = (scaledXMin-C) - (str1->boundingRect().width()/2);
                     double olYPos = (scaledYMax) - (str3->boundingRect().height()/2);
-                    double alXPos = (scaledXMin) - (str0->boundingRect().width()/2);
+                    double alXPos = (scaledXMin) - (str2->boundingRect().width()/2);
                     double alYPos = (scaledYMin+C) - (str3->boundingRect().height()/2);
                     double auXPos = (scaledXMax) - (str1->boundingRect().width()/2);
                     double auYPos = (scaledYMin+C) - (str2->boundingRect().height()/2);
@@ -264,7 +267,7 @@ void OutputWidget::printList(Expression exp){
                     double xLabelYPos = (scaledYMin+A) - (str5->boundingRect().height()/2);
                     double yLabelXPos = (scaledXMin-B) - (str6->boundingRect().width()/2);
                     double yLabelYPos = ((scaledYMin+scaledYMax)/2) - (str6->boundingRect().height()/2);
-                    std::cout << "str.width/2: " << (str1->boundingRect().width()/2) << std::endl;
+                    std::cout << "str.width/2: " << (str2->boundingRect().width()/2) << std::endl;
                     std::cout << "xScale: " << xScale << std::endl;
                     std::cout << "yScale: " << yScale << std::endl;
                     std::cout << "scaledXMin: " << scaledXMin << std::endl;
@@ -277,8 +280,14 @@ void OutputWidget::printList(Expression exp){
                     std::cout << "xLabelYPos:" << xLabelYPos << std::endl;
                     std::cout << "yLabelXPos:" << yLabelXPos << std::endl;
                     std::cout << "yLabelYPos:" << yLabelYPos << std::endl;
-                    std::cout << "olXPos: " << olXPos << std::endl;
-                    std::cout << "olYPos:" << olYPos << std::endl;
+                    std::cout << "ouXPos: " << olXPos << std::endl;
+                    std::cout << "ouYPos:" << olYPos << std::endl;
+                    std::cout << "olXPos: " << ouXPos << std::endl;
+                    std::cout << "olYPos:" << ouYPos << std::endl;
+                    std::cout << "auXPos: " << auXPos << std::endl;
+                    std::cout << "auYPos:" << auYPos << std::endl;
+                    std::cout << "alXPos: " << alXPos << std::endl;
+                    std::cout << "alYPos:" << alYPos << std::endl;
                     str0->setPos(ouXPos,ouYPos);
                     str1->setPos(olXPos,olYPos);
                     str2->setPos(alXPos,alYPos);
