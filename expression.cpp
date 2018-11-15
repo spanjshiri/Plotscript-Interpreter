@@ -412,12 +412,18 @@ Expression Expression::discrete_plot(Environment & env){
 Expression Expression::continuous_plot(Environment & env){
   Expression func = m_tail[0].eval(env);
   Expression bounds = m_tail[1].eval(env);
-  Expression options = m_tail[2].eval(env);
-
-  if(!func.head().isLambda() || !bounds.isHeadList() || !options.isHeadList()){
-    throw SemanticError("Error during evaluation: first or second argument ");
+  Expression options;
+  if(m_tail.size() > 2){
+    options = m_tail[2].eval(env);
+    if(!func.head().isLambda() || !bounds.isHeadList() || !options.isHeadList()){
+      throw SemanticError("Error during evaluation: first or second argument ");
+    }
   }
-
+  else{
+    if(!func.head().isLambda() || !bounds.isHeadList()){
+      throw SemanticError("Error during evaluation: first or second argument ");
+    }
+  }
   double xMin = bounds.m_tail[0].head().asNumber();
   double xMax = bounds.m_tail[1].head().asNumber();
   std::vector<Expression> list = {};
@@ -428,10 +434,10 @@ Expression Expression::continuous_plot(Environment & env){
   double yMin = yBounds.m_tail[0].head().asNumber();
   double yMax = yBounds.m_tail[1].head().asNumber();
 
-  std::cout << "XMin: " << xMin << std::endl;
-  std::cout << "XMax: " << xMax << std::endl;
-  std::cout << "yMin: " << yMin << std::endl;
-  std::cout << "yMiax: " << yMax << std::endl;
+  // std::cout << "XMin: " << xMin << std::endl;
+  // std::cout << "XMax: " << xMax << std::endl;
+  // std::cout << "yMin: " << yMin << std::endl;
+  // std::cout << "yMax: " << yMax << std::endl;
 
   double xScale = N/(xMax-xMin);
   double yScale = N/(yMax-yMin);
@@ -445,45 +451,72 @@ Expression Expression::continuous_plot(Environment & env){
   //double scaledXMid = (scaledXMax+scaledXMin)/2;
   //double scaledYMid = (scaledYMax+scaledYMin)/2;
 
-  // double pointx = 0;
-  // double pointy = 0;
-
   std::vector<Expression> finalList = {};
+  std::vector<Expression> XVector = {};
 
   Atom headPoint = Atom("make-point");
   Atom headLine = Atom("make-line");
 
-  // std::cout << "XMax: " << xMax << std::endl;
-  // std::cout << "XMin: " << xMin << std::endl;
-  // std::cout << "YMax: " << yMax << std::endl;
-  // std::cout << "YMin: " << yMin << std::endl;
+  double stepSize = (xMax-xMin)/50;
 
-  // for(auto &newExp : data.m_tail){
-  //   pointx = newExp.m_tail[0].head().asNumber();
-  //   pointy = newExp.m_tail[1].head().asNumber();
-  //   pointx = pointx * xScale;
-  //   pointy = pointy * yScale;
-  //   pointy *= -1;
-  //   list.emplace_back(Expression(pointx));
-  //   list.emplace_back(Expression(pointy));
-  //   Expression newPoint = Expression(list,headPoint);
-  //   list.clear();
-  //   list.emplace_back(Expression(pointx));
-  //   if(yMin > 0){
-  //     list.emplace_back(Expression(-1*yMax));
-  //   }
-  //   else{
-  //     list.emplace_back(Expression(0));
-  //   }
-  //   Expression newIntercept = Expression(list,headPoint);
-  //   list.clear();
-  //   list.emplace_back(newPoint);
-  //   list.emplace_back(newIntercept);
-  //   Expression newStem = Expression(list,headLine);
-  //   list.clear();
-  //   finalList.emplace_back(newPoint.eval(env));
-  //   finalList.emplace_back(newStem.eval(env));
+  for(double i = xMin; i <= xMax+stepSize; i+=stepSize){
+    XVector.emplace_back(Expression(i));
+  }
+  list.clear();
+  list.emplace_back(m_tail[0]);
+  list.emplace_back(Expression(XVector,Atom("list")));
+  Expression yVals = Expression(list,Atom("map")).eval(env);
+  list.clear();
+  Expression xVals = Expression(XVector,Atom("list")).eval(env);
+
+  double pointx = 0;
+  double pointy = 0;
+  double prevPointx = 0;
+  double prevPointy = 0;
+  int count = 1;
+
+  // int XCount = 0;
+  // for(auto s = (xVals.tailConstBegin()); s != xVals.tailConstEnd(); s++){
+  //   std::cout << "XVals: " << (*s).head().asNumber() << std::endl;
+  //   XCount++;
   // }
+
+  // int YCount = 0;
+  // for(auto t = (yVals.tailConstBegin()); t != yVals.tailConstEnd(); t++){
+  //   std::cout << "YVals: " << (*t).head().asNumber() << std::endl;
+  //   YCount++;
+  // }
+  // std::cout << "XCount: " << XCount << std::endl;
+  // std::cout << "YCount: " << YCount << std::endl;
+
+
+  for(auto _ : yVals.m_tail){
+    list.clear();
+    pointx = xVals.m_tail[count].head().asNumber();
+    pointy = yVals.m_tail[count].head().asNumber();
+    //std::cout << "Current (X,Y): " << "(" << pointx << "," << pointy << ")" << std::endl;
+    prevPointx = xVals.m_tail[count-1].head().asNumber();
+    prevPointy = yVals.m_tail[count-1].head().asNumber();
+    //std::cout << "Previous (X,Y): " << "(" << prevPointx << "," << prevPointy << ")" << std::endl;
+    //std::cout << "Count: " << count << std::endl;
+    list.emplace_back(Expression(prevPointx*xScale));
+    list.emplace_back(Expression(prevPointy*yScale*-1));
+    Expression prevPoint = Expression(list,headPoint);
+    list.clear();
+    list.emplace_back(Expression(pointx*xScale));
+    list.emplace_back(Expression(pointy*yScale*-1));
+    Expression newPoint = Expression(list,headPoint);
+    list.clear();
+    list.emplace_back(prevPoint);
+    list.emplace_back(newPoint);
+    Expression newLine = Expression(list,headLine);
+    list.clear();
+    // finalList.emplace_back(newPoint.eval(env));
+    finalList.emplace_back(newLine.eval(env));
+    if(count < 50){
+      count++;
+    }
+  }
 
   //Middle Vertical Line
   list.clear();
@@ -615,7 +648,8 @@ Expression Expression::handle_map(Environment & env) {
 	}
 	// tail must have size 3 or error
 	if (m_tail.size() != 2) {
-		throw SemanticError("Error during evaluation: invalid number of arguments to apply");
+    std::cout << "M_Tail Size: " << m_tail.size() << std::endl;
+		throw SemanticError("Error during evaluation: invalid number of arguments to map");
 	}
 	if (env.is_exp(m_tail[0].head())) {
 		for (auto e = (exp.tailConstBegin()); e != exp.tailConstEnd(); e++) {

@@ -331,22 +331,77 @@ void OutputWidget::printList(Expression exp){
                 static double xMax = 0;
                 static double yMin = 0;
                 static double yMax = 0;
-
                 if(count == 0){
                     stringXMin = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
                     xMin = std::stod(stringXMin);
+                    std::cout << "stringXMin: " << stringXMin << std::endl;
+                    std::cout << "xMin: " << xMin << std::endl;
                 }
                 else if(count ==  1){
                     stringXMax = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
                     xMax = std::stod(stringXMax);
+                    std::cout << "stringXMax: " << stringXMax << std::endl;
+                    std::cout << "xMax: " << xMax << std::endl;
+                    
                 }
                 else if(count == 2){
                     stringYMin = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
                     yMin = std::stod(stringYMin);
+                    std::cout << "stringYMin: " << stringYMin << std::endl;
+                    std::cout << "yMin: " << yMin << std::endl;
                 }
                 else if(count == 3){
                     stringYMax = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
                     yMax = std::stod(stringYMax);
+                    std::cout << "stringYMax: " << stringYMax << std::endl;
+                    std::cout << "yMax: " << yMax << std::endl;
+                    if((e+1) == exp.tailConstEnd()){
+                        QGraphicsTextItem *str0 = scene->addText(QString::fromStdString(stringYMin));
+                        QGraphicsTextItem *str1 = scene->addText(QString::fromStdString(stringYMax));
+                        QGraphicsTextItem *str2 = scene->addText(QString::fromStdString(stringXMin));
+                        QGraphicsTextItem *str3 = scene->addText(QString::fromStdString(stringXMax));
+                        auto font = QFont("Monospace");
+                        font.setStyleHint(QFont::TypeWriter);
+                        font.setPointSize(1);
+                        str0->setFont(font);
+                        str1->setFont(font);
+                        str2->setFont(font);
+                        str3->setFont(font);
+                        double xScale = N/(xMax-xMin);
+                        double yScale = (N/(yMax-yMin));
+                        double scaledXMin = xMin*xScale;
+                        double scaledXMax = xMax*xScale;
+                        double scaledYMin = -1*yMin*yScale;
+                        double scaledYMax = -1*yMax*yScale;
+                        double ouXPos = (scaledXMin-C) - (str0->boundingRect().width()/2);
+                        double ouYPos = (scaledYMin) - (str2->boundingRect().height()/2);
+                        double olXPos = (scaledXMin-C) - (str1->boundingRect().width()/2);
+                        double olYPos = (scaledYMax) - (str3->boundingRect().height()/2);
+                        double alXPos = (scaledXMin) - (str2->boundingRect().width()/2);
+                        double alYPos = (scaledYMin+C) - (str3->boundingRect().height()/2);
+                        double auXPos = (scaledXMax) - (str1->boundingRect().width()/2);
+                        double auYPos = (scaledYMin+C) - (str2->boundingRect().height()/2);
+                        str0->setPos(ouXPos,ouYPos);
+                        str1->setPos(olXPos,olYPos);
+                        str2->setPos(alXPos,alYPos);
+                        str3->setPos(auXPos,auYPos);
+                        view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                        count = 0;
+                        stringXMin = "";
+                        stringXMax = "";
+                        stringYMin = "";
+                        stringYMax = "";
+                        stringTitle = "";
+                        stringXLabel = "";
+                        stringYLabel = "";
+                        xMin = 0;
+                        xMax = 0;
+                        yMin = 0;
+                        yMax = 0;
+                        return;
+                    }
                 }
                 else if(count == 4){
                     stringTitle = (*e).head().asString().substr(1,(*e).head().asString().length()-2);
@@ -393,27 +448,27 @@ void OutputWidget::printList(Expression exp){
                     double xLabelYPos = (scaledYMin+A) - (str5->boundingRect().height()/2);
                     double yLabelXPos = (scaledXMin-B) - (str6->boundingRect().width()/2);
                     double yLabelYPos = ((scaledYMin+scaledYMax)/2) - (str6->boundingRect().height()/2);
-                    std::cout << "str.width/2: " << (str2->boundingRect().width()/2) << std::endl;
-                    std::cout << "xScale: " << xScale << std::endl;
-                    std::cout << "yScale: " << yScale << std::endl;
-                    std::cout << "scaledXMin: " << scaledXMin << std::endl;
-                    std::cout << "scaledXMax: " << scaledXMax << std::endl;
-                    std::cout << "scaledYMin: " << scaledYMin << std::endl;
-                    std::cout << "scaledYMax: " << scaledYMax << std::endl;
-                    std::cout << "titleXPos: " << titleXPos << std::endl;
-                    std::cout << "titleYPos: " << titleYPos << std::endl;
-                    std::cout << "xLabelXPos:" << xLabelXPos << std::endl;
-                    std::cout << "xLabelYPos:" << xLabelYPos << std::endl;
-                    std::cout << "yLabelXPos:" << yLabelXPos << std::endl;
-                    std::cout << "yLabelYPos:" << yLabelYPos << std::endl;
-                    std::cout << "ouXPos: " << olXPos << std::endl;
-                    std::cout << "ouYPos:" << olYPos << std::endl;
-                    std::cout << "olXPos: " << ouXPos << std::endl;
-                    std::cout << "olYPos:" << ouYPos << std::endl;
-                    std::cout << "auXPos: " << auXPos << std::endl;
-                    std::cout << "auYPos:" << auYPos << std::endl;
-                    std::cout << "alXPos: " << alXPos << std::endl;
-                    std::cout << "alYPos:" << alYPos << std::endl;
+                    // std::cout << "str.width/2: " << (str2->boundingRect().width()/2) << std::endl;
+                    // std::cout << "xScale: " << xScale << std::endl;
+                    // std::cout << "yScale: " << yScale << std::endl;
+                    // std::cout << "scaledXMin: " << scaledXMin << std::endl;
+                    // std::cout << "scaledXMax: " << scaledXMax << std::endl;
+                    // std::cout << "scaledYMin: " << scaledYMin << std::endl;
+                    // std::cout << "scaledYMax: " << scaledYMax << std::endl;
+                    // std::cout << "titleXPos: " << titleXPos << std::endl;
+                    // std::cout << "titleYPos: " << titleYPos << std::endl;
+                    // std::cout << "xLabelXPos:" << xLabelXPos << std::endl;
+                    // std::cout << "xLabelYPos:" << xLabelYPos << std::endl;
+                    // std::cout << "yLabelXPos:" << yLabelXPos << std::endl;
+                    // std::cout << "yLabelYPos:" << yLabelYPos << std::endl;
+                    // std::cout << "ouXPos: " << olXPos << std::endl;
+                    // std::cout << "ouYPos:" << olYPos << std::endl;
+                    // std::cout << "olXPos: " << ouXPos << std::endl;
+                    // std::cout << "olYPos:" << ouYPos << std::endl;
+                    // std::cout << "auXPos: " << auXPos << std::endl;
+                    // std::cout << "auYPos:" << auYPos << std::endl;
+                    // std::cout << "alXPos: " << alXPos << std::endl;
+                    // std::cout << "alYPos:" << alYPos << std::endl;
                     str0->setPos(ouXPos,ouYPos);
                     str1->setPos(olXPos,olYPos);
                     str2->setPos(alXPos,alYPos);
