@@ -403,9 +403,10 @@ Expression Expression::discrete_plot(Environment & env){
     finalList.emplace_back((*g).m_tail[1]);
   }
 
-  Expression finallist = Expression(finalList);
+  /*Expression finallist = Expression(finalList);
   finallist.head().setDiscretePlot();
-  return finallist;
+  return finallist;*/
+  return Expression(finalList);
 }
 
 // Adds a continuous plot function
@@ -634,6 +635,7 @@ Expression Expression::continuous_plot(Environment & env){
 
   Expression finallist = Expression(finalList);
   finallist.head().setContinuousPlot();
+  //std::cout << "size of vector: " << finalList.size() << std::endl;
   return finallist;
 }
 
@@ -648,7 +650,7 @@ Expression Expression::handle_map(Environment & env) {
 	}
 	// tail must have size 3 or error
 	if (m_tail.size() != 2) {
-    std::cout << "M_Tail Size: " << m_tail.size() << std::endl;
+    //std::cout << "M_Tail Size: " << m_tail.size() << std::endl;
 		throw SemanticError("Error during evaluation: invalid number of arguments to map");
 	}
 	if (env.is_exp(m_tail[0].head())) {
