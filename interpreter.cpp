@@ -21,6 +21,5 @@ bool Interpreter::parseStream(std::istream & expression) noexcept{
 				     
 
 Expression Interpreter::evaluate(){
-
   return ast.eval(env);
 }

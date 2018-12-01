@@ -261,6 +261,7 @@ Expression Expression::discrete_plot(Environment & env){
   // std::cout << "XMin: " << xMin << std::endl;
   // std::cout << "YMax: " << yMax << std::endl;
   // std::cout << "YMin: " << yMin << std::endl;
+  
 
   for(auto &newExp : data.m_tail){
     pointx = newExp.m_tail[0].head().asNumber();
