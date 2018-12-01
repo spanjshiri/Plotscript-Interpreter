@@ -6,6 +6,49 @@
 #include "interpreter.hpp"
 #include "semantic_error.hpp"
 #include "startup_config.hpp"
+#include "message_queue.hpp"
+
+typedef MessageQueue<std::string> imq;
+typedef MessageQueue<std::pair<std::string,Expression>> omq;
+
+class Consumer {
+public:
+  Consumer(imq *inputQueuePtr, omq *outputQueuePtr, int identifier = 0)
+  {
+    inputQueue = inputQueuePtr;
+    outputQueue = outputQueuePtr;
+    id = identifier;
+  }
+  void operator()(Interpreter i) const
+  {
+    while(true){
+      Expression tempExp;
+      std::string tempStr;
+      inputQueue->wait_and_pop(tempStr);
+      std::istringstream expression(tempStr);
+      if(!i.parseStream(expression)){
+        tempStr = "Invalid Program. Could not parse.";
+      }
+      else{
+        try{
+          Expression exp = i.evaluate();
+          tempExp = exp;
+        }
+        catch(const SemanticError & ex){
+          tempStr = ex.what();
+        }	
+      }
+      std::pair<std::string,Expression> tempPair = {tempStr, tempExp};
+
+      outputQueue->push(tempPair);
+    }
+  }
+private:
+  imq *inputQueue;
+  omq *outputQueue;
+  int id;
+};
+
 
 void prompt(){
   std::cout << "\nplotscript> ";
@@ -68,30 +111,38 @@ int eval_from_command(std::string argexp, Interpreter interp){
 
 // A REPL is a repeated read-eval-print loop
 void repl(Interpreter interp){
-  //Interpreter interp;
-    
+
+  imq *input = new imq;
+  omq *output = new omq;
+  std::pair<std::string,Expression> tempPair = {};
+  Consumer con(input, output);
+
+  std::thread consumer_th1(con,interp);
+  
+  
+
   while(!std::cin.eof()){
     
     prompt();
     std::string line = readline();
-    
+
     if(line.empty()) continue;
 
-    std::istringstream expression(line);
-    
-    if(!interp.parseStream(expression)){
-      error("Invalid Expression. Could not parse.");
+    input->push(line);
+
+    output->wait_and_pop(tempPair);
+
+    if(tempPair.first == ""){
+      std::cout << tempPair.second << std::endl;
     }
     else{
-      try{
-	Expression exp = interp.evaluate();
-	std::cout << exp << std::endl;
-      }
-      catch(const SemanticError & ex){
-	std::cerr << ex.what() << std::endl;
-      }
+      std::cout << tempPair.first << std::endl;
     }
+    
   }
+  consumer_th1.join();
+  delete input;
+  delete output;
 }
 
 int main(int argc, char *argv[])
@@ -128,3 +179,18 @@ int main(int argc, char *argv[])
     
   return EXIT_SUCCESS;
 }
+
+// class Producer {
+// public:
+//   Producer(imq *inputQueuePtr)
+//   {
+//     inputQueue = inputQueuePtr;
+//   }
+//   void operator()(std::string string) const
+//   {
+//     inputQueue->push(string);
+//   }
+// private:
+//   imq *inputQueue;
+// };
+
