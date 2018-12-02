@@ -1,10 +1,24 @@
 #include "notebook_app.hpp"
 
 NotebookApp::NotebookApp(QWidget * parent) : QWidget(parent) {
-    QVBoxLayout *layout = new QVBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    QPushButton *startButton = new QPushButton("Start Kernel");
+    QPushButton *stopButton = new QPushButton("Stop Kernel");
+    QPushButton *resetButton = new QPushButton("Reset Kernel");
+    QPushButton *interruptButton = new QPushButton("Interrupt");
+    startButton->setObjectName("start");
+    stopButton->setObjectName("stop");
+    resetButton->setObjectName("reset");
+    // interruptButton->setObjectName("interrupt");
+    hLayout->addWidget(startButton);
+    hLayout->addWidget(stopButton);
+    hLayout->addWidget(resetButton);
+    hLayout->addWidget(interruptButton);
+    QVBoxLayout *vLayout = new QVBoxLayout;
     setObjectName("notebook");
-    layout->addWidget(&input, 1);
-    layout->addWidget(&output, 1);
-    this->setLayout(layout);
+    vLayout->addLayout(hLayout);
+    vLayout->addWidget(&input, 1);
+    vLayout->addWidget(&output, 1);
+    this->setLayout(vLayout);
     QObject::connect(&input, SIGNAL(sendText(QString)), &output, SLOT(recieveText(QString)));
 }

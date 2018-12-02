@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLayout>
 #include <QPlainTextEdit>
+#include <QPushButton>
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QGraphicsView>
