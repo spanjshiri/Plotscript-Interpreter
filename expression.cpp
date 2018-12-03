@@ -6,6 +6,8 @@
 #include "environment.hpp"
 #include "semantic_error.hpp"
 
+volatile sig_atomic_t global_status_flag = 0;
+
 Expression::Expression(){}
 
 Expression::Expression(const Atom & a){
@@ -793,6 +795,9 @@ Expression Expression::handle_lambda(Environment & env) {
 // difficult with the ast data structure used (no parent pointer).
 // this limits the practical depth of our AST
 Expression Expression::eval(Environment & env){
+  if(global_status_flag > 0){
+     return Expression(Atom("Error: interpreter kernel not running"));
+  }
   if(m_tail.empty()){
 	if (m_head.isSymbol() && m_head.asSymbol() == "list") {
 		  return Expression(m_tail);

@@ -9,7 +9,8 @@ Defines the Expression type and assiciated functions.
 #include <string>
 #include <vector>
 #include <algorithm> 
-
+#include <csignal>
+#include <cstdlib>
 #include "token.hpp"
 #include "atom.hpp"
 
@@ -19,6 +20,8 @@ const double B = 3.0;
 const double C = 2.0;
 const double D = 2.0;
 const double P = 0.5;
+
+extern volatile sig_atomic_t global_status_flag;
 
 // forward declare Environment
 class Environment;
