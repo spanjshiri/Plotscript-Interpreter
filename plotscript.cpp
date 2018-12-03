@@ -98,6 +98,7 @@ public:
     while(status == true){
       Expression tempExp;
       std::string tempStr;
+      std::string errStr;
       inputQueue->wait_and_pop(tempStr);
       std::istringstream expression(tempStr);
       if(tempStr == ""){
@@ -113,10 +114,10 @@ public:
           tempExp = exp;
         }
         catch(const SemanticError & ex){
-          tempStr = ex.what();
+          errStr = ex.what();
         }	
       }
-      std::pair<std::string,Expression> tempPair = {tempStr, tempExp};
+      std::pair<std::string,Expression> tempPair = {errStr, tempExp};
 
       outputQueue->push(tempPair);
     }
@@ -207,7 +208,6 @@ void repl(Interpreter interp){
 
   std::thread consumer_th1(con,interp);
   con.setstartedThread();
-  
 
   while(!std::cin.eof()){
     
@@ -232,8 +232,8 @@ void repl(Interpreter interp){
         if(!input->empty()){
           input->wait_and_pop(empty);
         }
-        continue;
       }
+      continue;
     }
     if(line == "%reset"){
       std::string empty;
@@ -249,6 +249,22 @@ void repl(Interpreter interp){
         consumer_th1 = std::thread(con,interp);
         con.setstartedThread();
       }
+      continue;
+    }
+    if(line == "%exit"){
+      std::string empty;
+      if(con.threadStarted() == 1){
+        con.setstoppedThread();
+        input->push(empty);
+        consumer_th1.join();
+        if(!input->empty()){
+          input->wait_and_pop(empty);
+        }
+      }
+      exit(EXIT_SUCCESS);
+    }
+    if(con.threadStarted() == 0){
+      std::cout << "Error: interpreter kernel not running" << std::endl;
       continue;
     }
     input->push(line);
@@ -270,7 +286,7 @@ void repl(Interpreter interp){
 
 int main(int argc, char *argv[])
 {
-    install_handler();
+  //install_handler();
    Interpreter interp;
    std::ifstream ifs(STARTUP_FILE);
     if(!interp.parseStream(ifs)){
