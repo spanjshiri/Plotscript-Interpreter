@@ -1,7 +1,6 @@
 #include "notebook_app.hpp"
 
 NotebookApp::NotebookApp(QWidget * parent) : QWidget(parent) {
-    std::cout << "Beginning of NotebookApp Constructor" << std::endl;
     QHBoxLayout *hLayout = new QHBoxLayout;
     QPushButton *startButton = new QPushButton("Start Kernel");
     QPushButton *stopButton = new QPushButton("Stop Kernel");

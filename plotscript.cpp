@@ -17,7 +17,7 @@ typedef MessageQueue<std::pair<std::string,Expression>> omq;
 // This global is needed for communication between the signal handler
 // and the rest of the code. This atomic integer counts the number of times
 // Cntl-C has been pressed by not reset by the REPL code.
-volatile sig_atomic_t global_status_flag = 0;
+// volatile sig_atomic_t global_status_flag = 0;
 
 // *****************************************************************************
 // install a signal handler for Cntl-C on Windows
@@ -200,7 +200,7 @@ int eval_from_command(std::string argexp, Interpreter interp){
 
 // A REPL is a repeated read-eval-print loop
 void repl(Interpreter interp){
-
+  global_status_flag = 0;
   imq *input = new imq;
   omq *output = new omq;
   std::pair<std::string,Expression> tempPair = {};
@@ -286,7 +286,7 @@ void repl(Interpreter interp){
 
 int main(int argc, char *argv[])
 {
-  //install_handler();
+  install_handler();
    Interpreter interp;
    std::ifstream ifs(STARTUP_FILE);
     if(!interp.parseStream(ifs)){
