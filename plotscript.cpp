@@ -32,7 +32,6 @@ BOOL WINAPI interrupt_handler(DWORD fdwCtrlType) {
   case CTRL_C_EVENT: // handle Cnrtl-C
     // if not reset since last call, exit
     if (global_status_flag > 0) { 
-      std::cout << "My cock is 9 inches" << std::endl;
       exit(EXIT_FAILURE);
     }
     ++global_status_flag;
@@ -147,6 +146,11 @@ std::string readline(){
   std::string line;
   std::getline(std::cin, line);
 
+  if (std::cin.fail() || std::cin.eof()) {
+      std::cin.clear(); // reset cin state
+      line.clear(); //clear input string
+    }
+
   return line;
 }
 
@@ -200,7 +204,7 @@ int eval_from_command(std::string argexp, Interpreter interp){
 
 // A REPL is a repeated read-eval-print loop
 void repl(Interpreter interp){
-  global_status_flag = 0;
+  
   imq *input = new imq;
   omq *output = new omq;
   std::pair<std::string,Expression> tempPair = {};
@@ -210,6 +214,7 @@ void repl(Interpreter interp){
   con.setstartedThread();
 
   while(!std::cin.eof()){
+    global_status_flag = 0;
     
     prompt();
     std::string line = readline();
