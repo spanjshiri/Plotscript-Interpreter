@@ -15,7 +15,7 @@ public:
     InputWidget(QWidget * parent = nullptr);
 
 signals:
-    void sendText(QString str);
+void sendText(QString str);
 
 private slots:
 
