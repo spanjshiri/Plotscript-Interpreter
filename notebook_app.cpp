@@ -1,6 +1,7 @@
 #include "notebook_app.hpp"
 
 NotebookApp::NotebookApp(QWidget * parent) : QWidget(parent) {
+    std::cout << "Beginning of NotebookApp Constructor" << std::endl;
     QHBoxLayout *hLayout = new QHBoxLayout;
     QPushButton *startButton = new QPushButton("Start Kernel");
     QPushButton *stopButton = new QPushButton("Stop Kernel");
@@ -21,4 +22,8 @@ NotebookApp::NotebookApp(QWidget * parent) : QWidget(parent) {
     vLayout->addWidget(&output, 1);
     this->setLayout(vLayout);
     QObject::connect(&input, SIGNAL(sendText(QString)), &output, SLOT(recieveText(QString)));
+    QObject::connect(startButton, SIGNAL(clicked()), &output, SLOT(recieveStartSignal()));
+    QObject::connect(stopButton, SIGNAL(clicked()), &output, SLOT(recieveStopSignal()));
+    QObject::connect(resetButton, SIGNAL(clicked()), &output, SLOT(recieveResetSignal()));
+    QObject::connect(interruptButton, SIGNAL(clicked()), &output, SLOT(recieveInterruptSignal()));
 }
