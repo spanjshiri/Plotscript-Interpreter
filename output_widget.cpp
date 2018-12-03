@@ -1,5 +1,17 @@
 #include "output_widget.hpp"
 
+OutputWidget::~OutputWidget(){
+    std::string empty;
+      if(con.threadStarted() == 1){
+        con.setstoppedThread();
+        inputQueue->push(empty);
+        consumer_th1.join();
+        if(!inputQueue->empty()){
+          inputQueue->wait_and_pop(empty);
+        }
+      }
+}
+
 OutputWidget::OutputWidget(QWidget * parent) : QWidget(parent) {
     QHBoxLayout *layout = new QHBoxLayout(this);
     scene = new QGraphicsScene(this);
@@ -21,9 +33,64 @@ OutputWidget::OutputWidget(QWidget * parent) : QWidget(parent) {
             scene->addText(QString(ex.what()));
         }
     }
+    con = Consumer(inputQueue,outputQueue);
+    consumer_th1 = std::thread(con,interp);
+
+}
+
+void OutputWidget::recieveStartSignal(){
+    if(con.threadStarted() == 0){
+        consumer_th1 = std::thread(con,interp);
+        con.setstartedThread();
+    }
+    return;
+}
+
+void OutputWidget::recieveStopSignal(){
+    std::string empty;
+      if(con.threadStarted() == 1){
+        con.setstoppedThread();
+        inputQueue->push(empty);
+        if(consumer_th1.joinable()){
+            consumer_th1.join();
+        }
+        if(!inputQueue->empty()){
+          inputQueue->wait_and_pop(empty);
+        }
+      }
+      return;
+}
+
+void OutputWidget::recieveResetSignal(){
+    std::string empty;
+    if(con.threadStarted() == 1){
+        con.setstoppedThread();
+        inputQueue->push(empty);
+        consumer_th1.join();
+        if(!inputQueue->empty()){
+        inputQueue->wait_and_pop(empty);
+        }
+    }
+    if(con.threadStarted() == 0){
+        consumer_th1 = std::thread(con,interp);
+        con.setstartedThread();
+    }
+    return;
+}
+
+void OutputWidget::recieveInterruptSignal(){
+
 }
 
 void OutputWidget::recieveText(QString str){
+    if(con.threadStarted() == 0){
+        scene->clear();
+        scene->addText("Error: interpreter kernel not running");
+        view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        return;
+    }
     std::istringstream expression(str.toStdString());
     if(!interp.parseStream(expression)){
         scene->clear();
