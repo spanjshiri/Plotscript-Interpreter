@@ -33,6 +33,7 @@ OutputWidget::OutputWidget(QWidget * parent) : QWidget(parent) {
             scene->addText(QString(ex.what()));
         }
     }
+    tempInterp = interp;
     con = Consumer(inputQueue,outputQueue);
     consumer_th1 = std::thread(con,interp);
 
@@ -63,7 +64,7 @@ void OutputWidget::recieveStopSignal(){
 
 void OutputWidget::recieveResetSignal(){
     std::string empty;
-    if(con.threadStarted() == 1){
+    if(consumer_th1.joinable()){
         con.setstoppedThread();
         inputQueue->push(empty);
         consumer_th1.join();
@@ -75,6 +76,7 @@ void OutputWidget::recieveResetSignal(){
         consumer_th1 = std::thread(con,interp);
         con.setstartedThread();
     }
+    interp = tempInterp;
     return;
 }
 

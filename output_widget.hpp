@@ -109,6 +109,7 @@ bool singleTextPrinted = false;
 QGraphicsScene * scene;
 QGraphicsView * view;
 Interpreter interp;
+Interpreter tempInterp;
 imq *inputQueue = new imq;
 omq *outputQueue = new omq;
 Consumer con;
