@@ -274,13 +274,21 @@ void repl(Interpreter interp){
     }
     input->push(line);
 
-    output->wait_and_pop(tempPair);
-
-    if(tempPair.first == ""){
-      std::cout << tempPair.second << std::endl;
+    while(output->empty()){
+      if(global_status_flag > 0){
+        std::cout << "Error: interpreter kernel not running" << std::endl;
+        break;
+      }
     }
-    else{
-      std::cout << tempPair.first << std::endl;
+    output->try_pop(tempPair);
+    // output->wait_and_pop(tempPair);
+    if(global_status_flag == 0){
+      if(tempPair.first == ""){
+        std::cout << tempPair.second << std::endl;
+      }
+      else{
+        std::cout << tempPair.first << std::endl;
+      }
     }
     
   }

@@ -796,6 +796,7 @@ Expression Expression::handle_lambda(Environment & env) {
 // this limits the practical depth of our AST
 Expression Expression::eval(Environment & env){
   if(global_status_flag > 0){
+    // std::cout << "Error: interpreter kernel not running" << std::endl;
      return Expression(Atom("Error: interpreter kernel not running"));
   }
   if(m_tail.empty()){
