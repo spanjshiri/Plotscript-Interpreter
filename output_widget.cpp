@@ -103,8 +103,8 @@ void OutputWidget::recieveText(QString str){
         view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         return;
     }
-    inputQueue->push(str.toStdString());
-    if(outputQueue->try_pop(tempPair)){
+    // inputQueue->push(str.toStdString());
+    // if(outputQueue->try_pop(tempPair)){
         std::istringstream expression(str.toStdString());
         if(!interp.parseStream(expression)){
             scene->clear();
@@ -169,13 +169,10 @@ void OutputWidget::recieveText(QString str){
                 scene->addText(QString(ex.what()));
             }
         }
-    }
-    else{
-        timer->start(0);
-        if(!inputQueue->empty()){
-            recieveText(str);
-        }
-    }
+    // }
+    // else{
+    //     timer->start(0);
+    // }
     
 }
 
@@ -195,8 +192,8 @@ void OutputWidget::printList(Expression exp){
         const QPen pen = QPen(Qt::NoPen);
         const QBrush brush = QBrush(Qt::black);
         scene->QGraphicsScene::addEllipse(values,pen,brush);
-        std::cout << "X Value of Single Point: " << x << std::endl;
-        std::cout << "Y Value of Single Point: " << y << std::endl;
+        // std::cout << "X Value of Single Point: " << x << std::endl;
+        // std::cout << "Y Value of Single Point: " << y << std::endl;
         view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
         view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -237,9 +234,9 @@ void OutputWidget::printList(Expression exp){
                 const QPen pen = QPen(Qt::NoPen);
                 const QBrush brush = QBrush(Qt::black);
                 scene->QGraphicsScene::addEllipse(values,pen,brush);
-                std::cout << "X Value of Multi Point: " << x << std::endl;
-                std::cout << "Y Value of Multi Point: " << y << std::endl;
-                std::cout << "Size Value of Multi Point: " << w << std::endl;
+                // std::cout << "X Value of Multi Point: " << x << std::endl;
+                // std::cout << "Y Value of Multi Point: " << y << std::endl;
+                // std::cout << "Size Value of Multi Point: " << w << std::endl;
                 view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
                 view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
