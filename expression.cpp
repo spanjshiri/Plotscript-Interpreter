@@ -6,7 +6,7 @@
 #include "environment.hpp"
 #include "semantic_error.hpp"
 
-volatile sig_atomic_t global_status_flag = 0;
+sig_atomic_t global_status_flag = 0;
 
 Expression::Expression(){}
 
