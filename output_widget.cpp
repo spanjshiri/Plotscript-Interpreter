@@ -172,7 +172,9 @@ void OutputWidget::recieveText(QString str){
     }
     else{
         timer->start(0);
-        recieveText(str);
+        if(!inputQueue->empty()){
+            recieveText(str);
+        }
     }
     
 }
@@ -182,17 +184,11 @@ void OutputWidget::printList(Expression exp){
         std::vector<Expression> tail = exp.makeTail();
         double w = exp.getSize();
         double h = exp.getSize();
-        double x = tail[0].head().asNumber()-(w/2);
-        double y = tail[1].head().asNumber()-(w/2);
+        double x = tail[0].head().asNumber();
+        double y = tail[1].head().asNumber();
         if(exp.head().isDiscrete()){
             w = .5;
             h = .5;
-        }
-        if(tail[0].head().asNumber() == 0){
-            x = 0;
-        }
-        if(tail[1].head().asNumber() == 0){
-            y = 0;
         }
         QRectF values = QRectF(x,y,w,h);
         values.moveCenter(QPointF(x,y));
@@ -230,17 +226,11 @@ void OutputWidget::printList(Expression exp){
                 std::vector<Expression> tail = (*e).makeTail();
                 double w = (*e).getSize();
                 double h = (*e).getSize();
-                double x = tail[0].head().asNumber()-(w/2);
-                double y = tail[1].head().asNumber()-(w/2);
+                double x = tail[0].head().asNumber();
+                double y = tail[1].head().asNumber();
                 if(exp.head().isDiscrete()){
                     w = .5;
                     h = .5;
-                }
-                if(tail[0].head().asNumber() == 0){
-                    x = 0;
-                }
-                if(tail[1].head().asNumber() == 0){
-                    y = 0;
                 }
                 QRectF values = QRectF(x,y,w,h);
                 values.moveCenter(QPointF(x,y));
