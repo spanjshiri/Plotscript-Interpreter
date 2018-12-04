@@ -170,11 +170,19 @@ void OutputWidget::printList(Expression exp){
             w = .5;
             h = .5;
         }
+        if(tail[0].head().asNumber() == 0){
+            x = 0;
+        }
+        if(tail[1].head().asNumber() == 0){
+            y = 0;
+        }
         QRectF values = QRectF(x,y,w,h);
         values.moveCenter(QPointF(x,y));
         const QPen pen = QPen(Qt::NoPen);
         const QBrush brush = QBrush(Qt::black);
         scene->QGraphicsScene::addEllipse(values,pen,brush);
+        std::cout << "X Value of Single Point: " << x << std::endl;
+        std::cout << "Y Value of Single Point: " << y << std::endl;
         view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
         view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -210,11 +218,20 @@ void OutputWidget::printList(Expression exp){
                     w = .5;
                     h = .5;
                 }
+                if(tail[0].head().asNumber() == 0){
+                    x = 0;
+                }
+                if(tail[1].head().asNumber() == 0){
+                    y = 0;
+                }
                 QRectF values = QRectF(x,y,w,h);
                 values.moveCenter(QPointF(x,y));
                 const QPen pen = QPen(Qt::NoPen);
                 const QBrush brush = QBrush(Qt::black);
                 scene->QGraphicsScene::addEllipse(values,pen,brush);
+                std::cout << "X Value of Multi Point: " << x << std::endl;
+                std::cout << "Y Value of Multi Point: " << y << std::endl;
+                std::cout << "Size Value of Multi Point: " << w << std::endl;
                 view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
                 view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
