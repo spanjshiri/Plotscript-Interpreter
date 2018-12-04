@@ -81,7 +81,8 @@ void OutputWidget::recieveResetSignal(){
 }
 
 void OutputWidget::recieveInterruptSignal(){
-
+    // scene->clear();
+    global_status_flag = 1;
 }
 
 void OutputWidget::recieveText(QString str){

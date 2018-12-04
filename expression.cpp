@@ -797,7 +797,8 @@ Expression Expression::handle_lambda(Environment & env) {
 Expression Expression::eval(Environment & env){
   if(global_status_flag > 0){
     // std::cout << "Error: interpreter kernel not running" << std::endl;
-     return Expression(Atom("Error: interpreter kernel not running"));
+     throw SemanticError("Error: interpreter kernel not running");
+     //return Expression(Atom("Error: interpreter kernel not running"));
   }
   if(m_tail.empty()){
 	if (m_head.isSymbol() && m_head.asSymbol() == "list") {
