@@ -10,6 +10,7 @@
 #include <QGraphicsTextItem>
 #include <QGraphicsEllipseItem>
 #include <QtMath>
+#include <QTimer>
 #include <QTextBlockFormat>
 #include <string>
 #include <sstream>
@@ -102,6 +103,7 @@ private slots:
     void recieveStopSignal();
     void recieveResetSignal();
     void recieveInterruptSignal();
+    void recieveTimerSignal();
 
 private:
 bool shouldClear = false;
@@ -114,6 +116,8 @@ imq *inputQueue = new imq;
 omq *outputQueue = new omq;
 Consumer con;
 std::thread consumer_th1;
+QTimer *timer = new QTimer(this);
+std::pair<std::string,Expression> tempPair = {};
 };
 
 #endif

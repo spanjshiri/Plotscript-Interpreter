@@ -25,4 +25,5 @@ NotebookApp::NotebookApp(QWidget * parent) : QWidget(parent) {
     QObject::connect(stopButton, SIGNAL(clicked()), &output, SLOT(recieveStopSignal()));
     QObject::connect(resetButton, SIGNAL(clicked()), &output, SLOT(recieveResetSignal()));
     QObject::connect(interruptButton, SIGNAL(clicked()), &output, SLOT(recieveInterruptSignal()));
+    // QObject::connect(timer, SIGNAL(timeout()), &output, SLOT(recieveTimerSignal()));
 }

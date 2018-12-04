@@ -6,6 +6,7 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QDebug>
+#include <QTimer>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include "input_widget.hpp"
@@ -27,6 +28,7 @@ signals:
 private:
     OutputWidget output;
     InputWidget input;
+    // QTimer *timer = new QTimer(this);
 };
 
 #endif
