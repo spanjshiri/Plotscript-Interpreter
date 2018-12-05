@@ -978,16 +978,16 @@ bool Expression::isText() const noexcept{
   return text;
 }
 
-bool Expression::isDiscrete() const noexcept{
-  bool discrete = false;
-  Expression discreteExp(Atom("\"discrete-plot\""));
-  if(propertymap.find("\"object-name\"") != propertymap.end()){
-    if(propertymap.at("\"object-name\"") == discreteExp){
-      discrete = true;
-    }
-  }
-  return discrete;
-}
+// bool Expression::isDiscrete() const noexcept{
+//   bool discrete = false;
+//   Expression discreteExp(Atom("\"discrete-plot\""));
+//   if(propertymap.find("\"object-name\"") != propertymap.end()){
+//     if(propertymap.at("\"object-name\"") == discreteExp){
+//       discrete = true;
+//     }
+//   }
+//   return discrete;
+// }
 
 double Expression::getSize() const noexcept{
   return propertymap.at("\"size\"").head().asNumber();

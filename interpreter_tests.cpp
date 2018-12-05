@@ -318,7 +318,6 @@ TEST_CASE("test the creation of a point", "[interpreter]") {
 
   std::map<std::string, Expression> propertymap;
   std::string program = "(set-property \"size\" 10 (make-point 0 5))";
-  INFO("program");
   std::istringstream iss(program);
 
   bool ok = interp.parseStream(iss);
@@ -345,9 +344,7 @@ TEST_CASE("test the creation of a line", "[interpreter]") {
 
   std::map<std::string, Expression> propertymap;
   std::string program = "(set-property \"thickness\" 13 (make-line (make-point 10 5) (make-point -3 -8)))";
-  INFO("program");
   std::istringstream iss(program);
-
   bool ok = interp.parseStream(iss);
   REQUIRE(ok == true);
   Expression value = run(program);
@@ -371,32 +368,46 @@ TEST_CASE("test the creation of a line", "[interpreter]") {
   REQUIRE(value.isPoint() == false);
 }
 
-// TEST_CASE("test the creation of text", "[interpreter]") {
-//   Interpreter interp;
+TEST_CASE("test the creation of text", "[interpreter]") {
+  Interpreter interp;
 
-//   std::map<std::string, Expression> propertymap;
-//   std::string program = "(set-property \"text-scale\" 2 (make-text \"Sulaiman is cool!\"))";
-//   INFO("program");
-//   std::istringstream iss(program);
+  std::map<std::string, Expression> propertymap;
+  std::string program = "(set-property \"text-scale\" 2 (make-text \"Sulaiman is cool!\"))";
+  std::istringstream iss(program);
 
-//   bool ok = interp.parseStream(iss);
-//   REQUIRE(ok == true);
-//   Expression value = run(program);
-//   std::vector<Expression> tail = value.makeTail();
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  Expression value = run(program);
+  Expression newExp = value.getPosition();
+  double scale = value.getTextScale();
+  double rotation = value.getTextRotation();
+  std::vector<Expression> tail = newExp.makeTail();
+  double x = tail[0].head().asNumber();
+  double y = tail[1].head().asNumber();
+  std::string text = value.head().asString();
+  std::string subText = text.substr(1,text.length()-2);
 
 
-//   double thickness = 13;
+  double scaleCheck = 2;
+  double rotationCheck = 0;
 
-//   REQUIRE(x1 == 10);
-//   REQUIRE(y1 == 5);
-//   REQUIRE(x2 == -3);
-//   REQUIRE(y2 == -8);
-//   REQUIRE(value.getThickness() == thickness);
-// 	REQUIRE(value.isText() == false);
-//   REQUIRE(value.isLine() == true);
-//   REQUIRE(value.isPoint() == false);
-// }
+  REQUIRE(x == 0);
+  REQUIRE(y == 0);
+  REQUIRE(scale == scaleCheck);
+  REQUIRE(rotation == rotationCheck);
+	REQUIRE(value.isText() == true);
+  REQUIRE(value.isLine() == false);
+  REQUIRE(value.isPoint() == false);
+}
 
+TEST_CASE("test the semantic error of discrete plot", "[interpreter]") {
+  std::string program = "(discrete-plot 4 (list (list \"title\" \"The Title\") (list \"abscissa-label\" \"X Label\") (list \"ordinate-label\" \"Y Label\") ))";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
 
 TEST_CASE( "Test Interpreter parser with numerical literals", "[interpreter]" ) {
 
