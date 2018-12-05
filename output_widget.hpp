@@ -18,6 +18,7 @@
 #include <fstream>
 #include <thread>
 #include <utility>
+#include <chrono>
 #include "expression.hpp"
 #include "interpreter.hpp"
 #include "semantic_error.hpp"
@@ -96,6 +97,11 @@ public:
     OutputWidget(QWidget * parent = nullptr);
     ~OutputWidget();
     void printList(Expression exp);
+    void startTimer(QString str);
+
+// signals:
+//   void startTimerSignal(int time);
+//   void stopTimerSignal();
     
 private slots:
     void recieveText(QString str);
@@ -103,7 +109,7 @@ private slots:
     void recieveStopSignal();
     void recieveResetSignal();
     void recieveInterruptSignal();
-    void recieveTimerSignal();
+    void recieveTimerSignal(/*QString str*/);
 
 private:
 bool shouldClear = false;
@@ -116,7 +122,7 @@ imq *inputQueue = new imq;
 omq *outputQueue = new omq;
 Consumer con;
 std::thread consumer_th1;
-QTimer *timer = new QTimer(this);
+QTimer *timer; /*= new QTimer(this);*/
 std::pair<std::string,Expression> tempPair = {};
 };
 
