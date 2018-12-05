@@ -58,7 +58,7 @@ public:
         return;
       }
       if(!i.parseStream(expression)){
-        tempStr = "Invalid Program. Could not parse.";
+        tempStr = "Error: Invalid Program. Could not parse.";
       }
       else{
         try{
@@ -97,7 +97,7 @@ public:
     OutputWidget(QWidget * parent = nullptr);
     ~OutputWidget();
     void printList(Expression exp);
-    void startTimer(QString str);
+    // void startTimer(QString str);
 
 // signals:
 //   void startTimerSignal(int time);
@@ -109,7 +109,7 @@ private slots:
     void recieveStopSignal();
     void recieveResetSignal();
     void recieveInterruptSignal();
-    void recieveTimerSignal(/*QString str*/);
+    void recieveTimerSignal();
 
 private:
 bool shouldClear = false;
@@ -122,7 +122,7 @@ imq *inputQueue = new imq;
 omq *outputQueue = new omq;
 Consumer con;
 std::thread consumer_th1;
-QTimer *timer; /*= new QTimer(this);*/
+QTimer *timer;
 std::pair<std::string,Expression> tempPair = {};
 };
 

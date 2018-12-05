@@ -2,14 +2,11 @@
 
 OutputWidget::~OutputWidget(){
     std::string empty;
-      if(con.threadStarted() == 1){
-        con.setstoppedThread();
-        inputQueue->push(empty);
-        consumer_th1.join();
-        if(!inputQueue->empty()){
-          inputQueue->wait_and_pop(empty);
-        }
-      }
+    inputQueue->push(empty);
+    consumer_th1.join();
+    if(!inputQueue->empty()){
+        inputQueue->wait_and_pop(empty);
+    }
 }
 
 OutputWidget::OutputWidget(QWidget * parent) : QWidget(parent) {
@@ -83,7 +80,7 @@ void OutputWidget::recieveResetSignal(){
 }
 
 void OutputWidget::recieveInterruptSignal(){
-    global_status_flag = 1;
+    global_status_flag+=1;
 }
 
 void OutputWidget::recieveTimerSignal(/*QString str*/){
@@ -159,7 +156,7 @@ void OutputWidget::recieveTimerSignal(/*QString str*/){
                     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 }
             }
-        }
+        }return;
 }
 
 void OutputWidget::recieveText(QString str){
@@ -177,6 +174,7 @@ void OutputWidget::recieveText(QString str){
     // recieveTimerSignal(str);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    return;
     // std::cout << "The value of try_pop is: " << outputQueue->try_pop(tempPair) << std::endl;
     // if(outputQueue->try_pop(tempPair)){
         // std::istringstream expression(str.toStdString());
