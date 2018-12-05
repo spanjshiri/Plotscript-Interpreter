@@ -409,6 +409,48 @@ TEST_CASE("test the semantic error of discrete plot", "[interpreter]") {
   REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
 }
 
+TEST_CASE("test discrete plot with 17 items", "[interpreter]") {
+  Interpreter interp;
+  std::string program = "(discrete-plot (list (list -1 -1) (list 1 1)) (list (list \"title\" \"The Title\") (list \"abscissa-label\" \"X Label\") (list \"ordinate-label\" \"Y Label\") ))";
+  std::istringstream iss(program);
+
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  Expression value = run(program);
+  std::vector<Expression> tail = value.makeTail();
+	REQUIRE(value.head().isDiscrete() == false);
+}
+
+TEST_CASE("test the semantic error #1 of continuous plot", "[interpreter]") {
+  std::string program = "(begin (define f (lambda (x) (+ (* 2 x) 1))) (continuous-plot f 5 (list (list \"title\" \"A continuous linear function\") (list \"abscissa-label\" \"x\") (list \"ordinate-label\" \"y\"))))";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("test the semantic error #2 of continuous plot", "[interpreter]") {
+  std::string program = "(begin (define f (lambda (x) (+ (* 2 x) 1))) (continuous-plot f 5))";
+	std::istringstream iss(program);
+	Interpreter interp;
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  REQUIRE_THROWS_AS(interp.evaluate(), SemanticError);
+}
+
+TEST_CASE("test continuous plot with items", "[interpreter]") {
+  Interpreter interp;
+  std::string program = "(begin (define f (lambda (x) (+ (* 2 x) 1))) (continuous-plot f (list -2 2) (list (list \"title\" \"A continuous linear function\") (list \"abscissa-label\" \"x\") (list \"ordinate-label\" \"y\"))))";
+  std::istringstream iss(program);
+
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  Expression value = run(program);
+  std::vector<Expression> tail = value.makeTail();
+	REQUIRE(value.head().isContinuous() == true);
+}
+
 TEST_CASE( "Test Interpreter parser with numerical literals", "[interpreter]" ) {
 
   std::vector<std::string> programs = {"(1)", "(+1)", "(+1e+0)", "(1e-0)"};
