@@ -83,7 +83,7 @@ void OutputWidget::recieveInterruptSignal(){
     global_status_flag+=1;
 }
 
-void OutputWidget::recieveTimerSignal(/*QString str*/){
+void OutputWidget::recieveTimerSignal(){
     if(outputQueue->try_pop(tempPair)){
         // std::istringstream expression(str.toStdString());
             std::string errorString = tempPair.first;
@@ -171,82 +171,7 @@ void OutputWidget::recieveText(QString str){
     }
     inputQueue->push(str.toStdString());
 
-    // recieveTimerSignal(str);
-
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return;
-    // std::cout << "The value of try_pop is: " << outputQueue->try_pop(tempPair) << std::endl;
-    // if(outputQueue->try_pop(tempPair)){
-        // std::istringstream expression(str.toStdString());
-        // if(!interp.parseStream(expression)){
-        //     scene->clear();
-        //     scene->addText("Error: Invalid Expression. Could not parse.");
-        //     view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-        //     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        //     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        // }
-        // else{
-        //     try{
-        //         Expression exp = interp.evaluate();
-        //         scene->clear();
-        //         if(exp.isText()){
-        //             std::vector<Expression> tail = exp.makeTail();
-        //             Expression newExp = exp.getPosition();
-        //             double scale = exp.getTextScale();
-        //             double rotation = exp.getTextRotation();
-        //             std::vector<Expression> tail2 = newExp.makeTail();
-        //             double x = tail2[0].head().asNumber();
-        //             double y = tail2[1].head().asNumber();
-        //             std::string text = exp.head().asString();
-        //             std::string subText = text.substr(1,text.length()-2);
-        //             QGraphicsTextItem *str = scene->addText(QString::fromStdString(subText));
-        //             auto font = QFont("Monospace");
-        //             font.setStyleHint(QFont::TypeWriter);
-        //             font.setPointSize(1);
-        //             str->setFont(font);
-        //             //str->setPos(x, y);
-        //             QRectF strRect = str->sceneBoundingRect();
-        //             QPointF centerText = QPointF(x-(strRect.width()/2),y-(strRect.height()/2));
-        //             str->setPos(centerText);
-        //             // std::cout << "xPos of Single Text: " << x-(strRect.width()/2) << std::endl;
-        //             // std::cout << "yPos of Single Text: " << y-(strRect.height()/2) << std::endl;
-        //             QPointF newCenter = str->boundingRect().center();
-        //             str->setTransformOriginPoint(newCenter);
-        //             str->setScale(scale);
-        //             str->setRotation(rotation*(180/M_PI));
-        //             view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-        //             view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        //             view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        //             singleTextPrinted = true;
-        //             return;
-        //         }
-        //         if(exp.head().isContinuous()){
-        //             printList(exp);
-        //         }
-        //         else if(exp.isHeadList() || exp.head().isDiscrete()/* || exp.head().isContinuous()*/){
-        //             if (exp.makeTail().size() >= 10){
-        //                 exp.head().setDiscretePlot();
-        //             }
-        //             printList(exp);
-        //         }
-        //         else if(exp.head().isLambda()){
-        //             return;
-        //         }
-        //         else {
-        //             scene->addText(QString::fromStdString(exp.makeString()));
-        //         }
-        //     }
-        //     catch(const SemanticError & ex){
-        //         scene->clear();
-        //         scene->addText(QString(ex.what()));
-        //     }
-        // }
-    // }
-    // else{
-    //     // startTimer(str);
-    //     // emit startTimerSignal(0);
-    //     // recieveTimerSignal(str);
-    // }
 }
 
 void OutputWidget::printList(Expression exp){

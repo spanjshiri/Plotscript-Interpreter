@@ -113,7 +113,7 @@ void NotebookTest::testDiscretePlotLayout() {
           (list "ordinate-label" "Y Label") )))";
 
   inputWidget->setPlainText(QString::fromStdString(program));
-  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 1000);
 
   auto view = outputWidget->findChild<QGraphicsView *>();
   QVERIFY2(view, "Could not find QGraphicsView as child of OutputWidget");
@@ -191,7 +191,7 @@ void NotebookTest::testContinuousPlotLayout() {
   std::string program = "(begin (define f (lambda (x) (+ (* 2 x) 1))) (continuous-plot f (list -2 2) (list (list \"title\" \"A continuous linear function\") (list \"abscissa-label\" \"x\") (list \"ordinate-label\" \"y\"))))";
 
   inputWidget->setPlainText(QString::fromStdString(program));
-  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 1000);
 
   auto view = outputWidget->findChild<QGraphicsView *>();
   QVERIFY2(view, "Could not find QGraphicsView as child of OutputWidget");
