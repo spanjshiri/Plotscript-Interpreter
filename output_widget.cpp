@@ -163,6 +163,7 @@ void OutputWidget::recieveTimerSignal(/*QString str*/){
 }
 
 void OutputWidget::recieveText(QString str){
+    global_status_flag = 0;
     if(con.threadStarted() == 0){
         scene->clear();
         scene->addText("Error: interpreter kernel not running");
@@ -171,7 +172,6 @@ void OutputWidget::recieveText(QString str){
         view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         return;
     }
-    global_status_flag = 0;
     inputQueue->push(str.toStdString());
 
     // recieveTimerSignal(str);
