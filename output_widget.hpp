@@ -58,7 +58,7 @@ public:
         return;
       }
       if(!i.parseStream(expression)){
-        tempStr = "Error: Invalid Program. Could not parse.";
+        errStr = "Error: Invalid Program. Could not parse.";
       }
       else{
         try{
