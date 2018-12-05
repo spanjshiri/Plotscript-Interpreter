@@ -1,11 +1,13 @@
 #include "output_widget.hpp"
 
 OutputWidget::~OutputWidget(){
-    std::string empty;
-    inputQueue->push(empty);
-    consumer_th1.join();
-    if(!inputQueue->empty()){
-        inputQueue->wait_and_pop(empty);
+    if(con.threadStarted == 1){
+        std::string empty;
+        inputQueue->push(empty);
+        consumer_th1.join();
+        if(!inputQueue->empty()){
+            inputQueue->wait_and_pop(empty);
+        }
     }
 }
 
