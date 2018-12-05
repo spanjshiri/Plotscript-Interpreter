@@ -5,15 +5,22 @@
 #include <fstream>
 #include <iostream>
 
+#include "startup_config.hpp"
 #include "semantic_error.hpp"
 #include "interpreter.hpp"
 #include "expression.hpp"
 
 Expression run(const std::string & program){
-  
-  std::istringstream iss(program);
     
   Interpreter interp;
+
+  std::ifstream ifs(STARTUP_FILE);
+
+  REQUIRE(interp.parseStream(ifs));
+
+  REQUIRE_NOTHROW(interp.evaluate());
+
+  std::istringstream iss(program);
     
   bool ok = interp.parseStream(iss);
   if(!ok){
@@ -306,13 +313,91 @@ TEST_CASE("test Interpreter parser for isText false", "[interpreter]") {
 	REQUIRE(exp.isText() == false);
 }
 
-/*TEST_CASE("test Interpreter parser for getSize", "[interpreter]") {
-  std::string program = "(set-property \"size\" 10 (make-point 0 0))";
-  Expression value = run(program);
-	REQUIRE(value.getSize() == 10.0);
-}*/
+TEST_CASE("test the creation of a point", "[interpreter]") {
+  Interpreter interp;
 
-//(begin (define a (make-point 5 5)) (get-property "object-name" a))
+  std::map<std::string, Expression> propertymap;
+  std::string program = "(set-property \"size\" 10 (make-point 0 5))";
+  INFO("program");
+  std::istringstream iss(program);
+
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  Expression value = run(program);
+  // Expression newValue = result.getPosition();
+  // std::vector<Expression> tail = newResult.makeTail();
+  // double x = tail[0].head().asNumber();
+  // double y = tail[1].head().asNumber();
+  double size = 10;
+
+  // REQUIRE(x == 0);
+  // REQUIRE(y == 5);
+  REQUIRE(value.makeTail()[0].head().asNumber() == 0);
+  REQUIRE(value.makeTail()[1].head().asNumber() == 5);
+  REQUIRE(value.getSize() == size);
+	REQUIRE(value.isText() == false);
+  REQUIRE(value.isLine() == false);
+  REQUIRE(value.isPoint() == true);
+}
+
+TEST_CASE("test the creation of a line", "[interpreter]") {
+  Interpreter interp;
+
+  std::map<std::string, Expression> propertymap;
+  std::string program = "(set-property \"thickness\" 13 (make-line (make-point 10 5) (make-point -3 -8)))";
+  INFO("program");
+  std::istringstream iss(program);
+
+  bool ok = interp.parseStream(iss);
+  REQUIRE(ok == true);
+  Expression value = run(program);
+  std::vector<Expression> tail = value.makeTail();
+  std::vector<Expression> p1 = tail[0].makeTail();
+  std::vector<Expression> p2 = tail[1].makeTail();
+  double x1 = p1[0].head().asNumber();
+  double y1 = p1[1].head().asNumber();
+  double x2 = p2[0].head().asNumber();
+  double y2 = p2[1].head().asNumber();
+
+  double thickness = 13;
+
+  REQUIRE(x1 == 10);
+  REQUIRE(y1 == 5);
+  REQUIRE(x2 == -3);
+  REQUIRE(y2 == -8);
+  REQUIRE(value.getThickness() == thickness);
+	REQUIRE(value.isText() == false);
+  REQUIRE(value.isLine() == true);
+  REQUIRE(value.isPoint() == false);
+}
+
+// TEST_CASE("test the creation of text", "[interpreter]") {
+//   Interpreter interp;
+
+//   std::map<std::string, Expression> propertymap;
+//   std::string program = "(set-property \"text-scale\" 2 (make-text \"Sulaiman is cool!\"))";
+//   INFO("program");
+//   std::istringstream iss(program);
+
+//   bool ok = interp.parseStream(iss);
+//   REQUIRE(ok == true);
+//   Expression value = run(program);
+//   std::vector<Expression> tail = value.makeTail();
+
+
+//   double thickness = 13;
+
+//   REQUIRE(x1 == 10);
+//   REQUIRE(y1 == 5);
+//   REQUIRE(x2 == -3);
+//   REQUIRE(y2 == -8);
+//   REQUIRE(value.getThickness() == thickness);
+// 	REQUIRE(value.isText() == false);
+//   REQUIRE(value.isLine() == true);
+//   REQUIRE(value.isPoint() == false);
+// }
+
+
 TEST_CASE( "Test Interpreter parser with numerical literals", "[interpreter]" ) {
 
   std::vector<std::string> programs = {"(1)", "(+1)", "(+1e+0)", "(1e-0)"};
