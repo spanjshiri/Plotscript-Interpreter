@@ -1,7 +1,7 @@
 #include "output_widget.hpp"
 
 OutputWidget::~OutputWidget(){
-    if(con.threadStarted == 1){
+    if(con.threadStarted() == 1){
         std::string empty;
         inputQueue->push(empty);
         consumer_th1.join();
@@ -158,7 +158,7 @@ void OutputWidget::recieveTimerSignal(){
                     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 }
             }
-        }return;
+        }
 }
 
 void OutputWidget::recieveText(QString str){

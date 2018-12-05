@@ -97,11 +97,6 @@ public:
     OutputWidget(QWidget * parent = nullptr);
     ~OutputWidget();
     void printList(Expression exp);
-    // void startTimer(QString str);
-
-// signals:
-//   void startTimerSignal(int time);
-//   void stopTimerSignal();
     
 private slots:
     void recieveText(QString str);
