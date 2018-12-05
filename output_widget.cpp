@@ -94,6 +94,8 @@ void OutputWidget::recieveTimerSignal(/*QString str*/){
                 scene->clear();
                 scene->addText(QString::fromStdString(errorString));
                 view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             }
             else{
                 try{
@@ -144,12 +146,17 @@ void OutputWidget::recieveTimerSignal(/*QString str*/){
                     }
                     else {
                         scene->addText(QString::fromStdString(exp.makeString()));
+                        view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                     }
                 }
                 catch(const SemanticError & ex){
                     scene->clear();
                     scene->addText(QString(ex.what()));
                     view->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+                    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 }
             }
         }
