@@ -418,6 +418,7 @@ TEST_CASE("test discrete plot with 17 items", "[interpreter]") {
   REQUIRE(ok == true);
   Expression value = run(program);
   std::vector<Expression> tail = value.makeTail();
+  REQUIRE(tail.size() == 17);
 	REQUIRE(value.head().isDiscrete() == false);
 }
 
@@ -448,6 +449,7 @@ TEST_CASE("test continuous plot with items", "[interpreter]") {
   REQUIRE(ok == true);
   Expression value = run(program);
   std::vector<Expression> tail = value.makeTail();
+  REQUIRE(tail.size() == 64);
 	REQUIRE(value.head().isContinuous() == true);
 }
 

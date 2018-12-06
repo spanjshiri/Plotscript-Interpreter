@@ -88,6 +88,13 @@ private slots:
  void initTestCase();
  void testDiscretePlotLayout();
  void testContinuousPlotLayout();
+ void testProperty();
+ void testSetProperty();
+ void testLine();
+ void testText();
+ void testTextRotation();
+ void testArithmetic();
+ void testLambda();
 
 private:
   InputWidget *inputWidget;
@@ -100,6 +107,7 @@ private:
 };
 
 void NotebookTest::initTestCase(){
+  widget.show();
   inputWidget = widget.findChild<InputWidget*>("input");
   outputWidget = widget.findChild<OutputWidget*>("output");
 }
@@ -113,7 +121,7 @@ void NotebookTest::testDiscretePlotLayout() {
           (list "ordinate-label" "Y Label") )))";
 
   inputWidget->setPlainText(QString::fromStdString(program));
-  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 1000);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 500);
 
   auto view = outputWidget->findChild<QGraphicsView *>();
   QVERIFY2(view, "Could not find QGraphicsView as child of OutputWidget");
@@ -191,7 +199,7 @@ void NotebookTest::testContinuousPlotLayout() {
   std::string program = "(begin (define f (lambda (x) (+ (* 2 x) 1))) (continuous-plot f (list -2 2) (list (list \"title\" \"A continuous linear function\") (list \"abscissa-label\" \"x\") (list \"ordinate-label\" \"y\"))))";
 
   inputWidget->setPlainText(QString::fromStdString(program));
-  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 1000);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 500);
 
   auto view = outputWidget->findChild<QGraphicsView *>();
   QVERIFY2(view, "Could not find QGraphicsView as child of OutputWidget");
@@ -263,6 +271,89 @@ void NotebookTest::testContinuousPlotLayout() {
   // // check the point at (1,1)
   // QCOMPARE(findPoints(scene, QPointF(10, -12.5), 0.6), 1); 
 }
+
+void NotebookTest::testProperty(){
+  QString str = "(get-property \"chicken\" (\"meat\"))";
+  inputWidget->setPlainText(str);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+  auto view = outputWidget->findChild<QGraphicsView *>();
+  auto scene = view->scene();
+  auto items = scene->items();
+
+  QGraphicsTextItem *item = (QGraphicsTextItem*)(*items.begin());
+
+  QVERIFY(item->toPlainText()=="NONE");
+}
+
+void NotebookTest::testSetProperty(){
+  QString str = "(set-property \"size\" .5 (make-point 0 0))";
+  inputWidget->setPlainText(str);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+  auto view = outputWidget->findChild<QGraphicsView *>();
+  auto scene = view->scene();
+  auto items = scene->items();
+
+  QVERIFY(findPoints(scene, QPointF(0, 0), qreal(.5)) == 0);
+}
+
+void NotebookTest::testLine(){
+  QString str = "(set-property \"thickness\" (4) (make-line (make-point 0 0) (make-point 20 20)))";
+  inputWidget->setPlainText(str);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+  auto view = outputWidget->findChild<QGraphicsView *>();
+  auto scene = view->scene();
+  auto items = scene->items();
+
+  QVERIFY(findLines(scene, QRectF(1,2,3,4), qreal(2)) == 0);
+}
+
+void NotebookTest::testText(){
+  QString str = "(set-property \"position\" (make-point 0 0) (make-text \"Hello There!\"))";
+  inputWidget->setPlainText(str);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+  auto view = outputWidget->findChild<QGraphicsView *>();
+  auto scene = view->scene();
+  auto items = scene->items();
+
+  QVERIFY(findText(scene, QPointF(0,0), qreal(0), QString("Hello There!")) == 1);
+}
+
+void NotebookTest::testTextRotation(){
+  QString str = "(set-property \"text-rotation\" (/ pi 4) (make-text \"What's up dog?\"))";
+  inputWidget->setPlainText(str);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+  auto view = outputWidget->findChild<QGraphicsView *>();
+  auto scene = view->scene();
+  auto items = scene->items();
+
+  QVERIFY(findText(scene, QPointF(0,0), qreal(45), QString("What's up dog?")) == 1);
+}
+
+void NotebookTest::testArithmetic(){
+  QString str = "(^ 5 2)";
+  inputWidget->setPlainText(str);
+  QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+  auto view = outputWidget->findChild<QGraphicsView *>();
+
+  QVERIFY2(view, "(25)");
+}
+
+void NotebookTest::testLambda(){
+	QString str = "(define inc (lambda (y) (* y 3)))";
+	inputWidget->setPlainText(str);
+	QTest::keyClick(inputWidget, Qt::Key_Return, Qt::ShiftModifier, 50);
+
+	auto view = outputWidget->findChild<QGraphicsView *>();
+
+	QVERIFY2(view, "");
+}
+
 
 
 QTEST_MAIN(NotebookTest)
